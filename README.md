@@ -2,7 +2,13 @@ Ukubuka is a lightweight library written in Java which is capable of powerful ET
 
 ### Description
 
-Ukubuka means “Visualizations” in Zulu which is one of the official languages of South Africa and is a member of the Bantu/Nguni family of languages. It is spoken by about 9 million people mainly in Zululand and northern Natal in South Africa. It is a lightweight library written mainly in Java which allows the users to analyze, manipulate and visualize their datasets in a novel and creative ways with no serious programming. Isn’t that cool?
+Ukubuka means "View" or "Visualization" in Zulu which is one of the official languages of South Africa and is spoken by about 9 million people mainly in Zululand. 
+
+The inspiration behind this project came mainly from "Project Kibana" which provides visualization capabilities for ElasticSearch cluster. Although powerful, Kibana lacks to produce interactive visualizations defeating its own purpose. 
+
+Ukubuka aims at producing high-quality interactive visualizations. It is powerful, lightweight and easy to use. It allows the users to analyze, manipulate and visualize their datasets in a novel and creative ways with no serious programming. 
+
+Isn’t that cool?
 
 #### Features at a Glance
 
