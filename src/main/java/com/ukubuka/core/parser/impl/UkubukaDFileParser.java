@@ -5,7 +5,7 @@ import com.ukubuka.core.parser.UkubukaParser;
 
 public class UkubukaDFileParser implements UkubukaParser {
 
-    public String parseFile() throws ParserException {
+    public String parseFile(String completeFileName) throws ParserException {
         // TODO Auto-generated method stub
         return null;
     }

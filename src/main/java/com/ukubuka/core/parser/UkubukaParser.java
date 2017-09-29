@@ -13,10 +13,12 @@ public interface UkubukaParser {
     /**
      * File Parser
      * 
+     * @param Complete
+     *            File Name
      * @return File Contents
      * @throws ParserException
      */
-    String parseFile() throws ParserException;
+    String parseFile(String completeFileName) throws ParserException;
 
     /**
      * Get Parser Information
