@@ -1,13 +1,13 @@
 package com.ukubuka.core.writer;
 
+/**
+ * JSON Writer
+ * 
+ * @author agrawroh
+ * @version v1.0
+ */
 public class UkubukaJSONWriter {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
+    /* TODO */
 
 }

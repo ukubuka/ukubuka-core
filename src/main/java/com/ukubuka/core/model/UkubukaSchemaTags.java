@@ -1,13 +1,13 @@
 package com.ukubuka.core.model;
 
-public class UkubukaSchemaTags {
+/**
+ * Supported File Types
+ * 
+ * @author agrawroh
+ * @version v1.0
+ */
+public enum UkubukaSchemaTags {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
+    /* TODO */
 
 }

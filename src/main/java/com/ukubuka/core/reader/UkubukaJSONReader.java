@@ -1,13 +1,13 @@
 package com.ukubuka.core.reader;
 
+/**
+ * JSON Reader
+ * 
+ * @author agrawroh
+ * @version v1.0
+ */
 public class UkubukaJSONReader {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-    }
+    /* TODO */
 
 }
