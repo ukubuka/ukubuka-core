@@ -8,7 +8,7 @@ package com.ukubuka.core.exception;
  */
 public class SchemaException extends Exception {
 
-    private static final long serialVersionUID = 5614522984072357837L;
+    private static final long serialVersionUID = 3054275486189077703L;
 
     /************************* Constructor *************************/
     public SchemaException(String message) {
