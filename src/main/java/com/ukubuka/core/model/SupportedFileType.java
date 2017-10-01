@@ -17,7 +17,7 @@ public enum SupportedFileType {
     private String fileType;
 
     /********** Private Constructor **********/
-    private SupportedFileType(String fileType) {
+    private SupportedFileType(final String fileType) {
         this.fileType = fileType;
     }
 

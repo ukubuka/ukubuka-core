@@ -17,7 +17,7 @@ public enum SupportedSource {
     private String source;
 
     /********** Private Constructor **********/
-    private SupportedSource(String source) {
+    private SupportedSource(final String source) {
         this.source = source;
     }
 

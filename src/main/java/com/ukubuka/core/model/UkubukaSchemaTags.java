@@ -17,7 +17,7 @@ public enum UkubukaSchemaTags {
     private String tagName;
 
     /********** Private Constructor **********/
-    private UkubukaSchemaTags(String tagName) {
+    private UkubukaSchemaTags(final String tagName) {
         this.tagName = tagName;
     }
 
