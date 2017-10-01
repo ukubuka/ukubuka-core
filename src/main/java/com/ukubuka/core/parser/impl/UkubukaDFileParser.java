@@ -1,17 +1,39 @@
 package com.ukubuka.core.parser.impl;
 
+import java.util.Map;
+
+import org.json.CDL;
+import org.json.JSONArray;
+import org.springframework.stereotype.Component;
+
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.parser.UkubukaBaseParser;
 import com.ukubuka.core.parser.UkubukaParser;
 
-public class UkubukaDFileParser implements UkubukaParser {
+/**
+ * Ukubuka Delimited File Parser
+ * 
+ * @author agrawroh
+ * @version v1.0
+ */
+@Component
+public class UkubukaDFileParser extends UkubukaBaseParser implements
+        UkubukaParser {
 
-    public String parseFile(String completeFileName) throws ParserException {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Parse File
+     */
+    @Override
+    public JSONArray parseFile(final String completeFileName,
+            Map<String, String> flags) throws ParserException {
+        return CDL.toJSONArray(super.readWithOptions(completeFileName, flags));
     }
 
+    /**
+     * Get Parser Information
+     */
+    @Override
     public String getParserInfo() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getClass().getSimpleName();
     }
 }

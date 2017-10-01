@@ -1,5 +1,9 @@
 package com.ukubuka.core.parser;
 
+import java.util.Map;
+
+import org.json.JSONArray;
+
 import com.ukubuka.core.exception.ParserException;
 
 /**
@@ -13,12 +17,13 @@ public interface UkubukaParser {
     /**
      * File Parser
      * 
-     * @param Complete
-     *            File Name
-     * @return File Contents
+     * @param completeFileName
+     * @param flags
+     * @return JSON Array For File Contents
      * @throws ParserException
      */
-    String parseFile(String completeFileName) throws ParserException;
+    JSONArray parseFile(final String completeFileName, Map<String, String> flags)
+            throws ParserException;
 
     /**
      * Get Parser Information
