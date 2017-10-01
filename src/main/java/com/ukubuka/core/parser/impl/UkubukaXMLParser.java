@@ -3,10 +3,12 @@ package com.ukubuka.core.parser.impl;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
 import com.ukubuka.core.parser.UkubukaParser;
 
+@Component
 public class UkubukaXMLParser implements UkubukaParser {
 
     @Override
