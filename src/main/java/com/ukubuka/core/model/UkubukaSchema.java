@@ -32,6 +32,9 @@ public class UkubukaSchema {
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Extract {
+        @JsonProperty("id")
+        private String id;
+
         @JsonProperty("type")
         private SupportedFileType type;
 
@@ -85,6 +88,21 @@ public class UkubukaSchema {
         public void setFlags(Map<String, Object> flags) {
             this.flags = flags;
         }
+
+        /**
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+
+        /**
+         * @param id
+         *            the id to set
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
     }
 
     /**
@@ -95,7 +113,104 @@ public class UkubukaSchema {
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Transform {
+        @JsonProperty("id")
+        private String id;
 
+        @JsonProperty("operations")
+        private List<Operations> operations;
+
+        /**
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+
+        /**
+         * @param id
+         *            the id to set
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        /**
+         * @return the operations
+         */
+        public List<Operations> getOperations() {
+            return operations;
+        }
+
+        /**
+         * @param operations
+         *            the operations to set
+         */
+        public void setOperations(List<Operations> operations) {
+            this.operations = operations;
+        }
+    }
+
+    /**
+     * Operations
+     * 
+     * @author agrawroh
+     * @version v1.0
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Operations {
+        @JsonProperty("type")
+        private TransformOperation type;
+
+        @JsonProperty("source")
+        private String source;
+
+        @JsonProperty("target")
+        private String target;
+
+        /**
+         * @return the source
+         */
+        public String getSource() {
+            return source;
+        }
+
+        /**
+         * @param source
+         *            the source to set
+         */
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        /**
+         * @return the target
+         */
+        public String getTarget() {
+            return target;
+        }
+
+        /**
+         * @param target
+         *            the target to set
+         */
+        public void setTarget(String target) {
+            this.target = target;
+        }
+
+        /**
+         * @return the type
+         */
+        public TransformOperation getType() {
+            return type;
+        }
+
+        /**
+         * @param type
+         *            the type to set
+         */
+        public void setType(TransformOperation type) {
+            this.type = type;
+        }
     }
 
     /**
