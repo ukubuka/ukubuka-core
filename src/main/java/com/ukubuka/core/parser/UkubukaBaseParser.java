@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import com.ukubuka.core.exception.ParserException;
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.model.ExtractFlags;
+import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -30,12 +31,16 @@ public class UkubukaBaseParser {
      * @throws ParserException
      */
     public String readWithOptions(final String completeFileName,
-            Map<String, String> flags) throws ParserException {
-        boolean withHeader = Boolean.parseBoolean(flags
-                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()));
-        String fileContents = readWithOptions(completeFileName,
-                flags.get(ExtractFlags.FILE_ENCODING.getFlag()),
-                flags.get(ExtractFlags.FILE_DELIMITER.getFlag()));
+            Map<String, Object> flags) throws ParserException {
+        boolean withHeader = null != flags
+                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) ? (boolean) flags
+                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) : true;
+        SupportedSource source = null == flags.get(ExtractFlags.SOURCE
+                .getFlag()) ? SupportedSource.FILE : SupportedSource
+                .getSource((String) flags.get(ExtractFlags.SOURCE.getFlag()));
+        String fileContents = readWithOptions(source, completeFileName,
+                (String) flags.get(ExtractFlags.FILE_ENCODING.getFlag()),
+                (String) flags.get(ExtractFlags.FILE_DELIMITER.getFlag()));
         return withHeader ? fileContents : appendHeader(fileContents);
     }
 
@@ -88,13 +93,14 @@ public class UkubukaBaseParser {
      * @return File Content
      * @throws ParserException
      */
-    private String readWithOptions(final String completeFileName,
-            final String fileEncoding, final String fileDelimiter)
-            throws ParserException {
+    private String readWithOptions(final SupportedSource source,
+            final String completeFileName, final String fileEncoding,
+            final String fileDelimiter) throws ParserException {
         try {
             return StringUtils.isEmpty(fileDelimiter) ? reader
-                    .readFileAsString(completeFileName, fileEncoding) : reader
-                    .readFileAsString(completeFileName, fileEncoding).replace(
+                    .readFileAsString(source, completeFileName, fileEncoding)
+                    : reader.readFileAsString(source, completeFileName,
+                            fileEncoding).replace(
                             Constants.DELIMITER_REPLACE_REGEX_START
                                     + fileDelimiter
                                     + Constants.DELIMITER_REPLACE_REGEX_END,

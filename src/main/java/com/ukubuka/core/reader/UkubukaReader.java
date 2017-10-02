@@ -2,6 +2,7 @@ package com.ukubuka.core.reader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.ukubuka.core.exception.ReaderException;
+import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.utilities.Constants;
 
 /**
@@ -25,15 +27,19 @@ public class UkubukaReader {
     /**
      * Read File
      * 
+     * @param source
      * @param completeFileName
+     * @param fileEncoding
+     * @param endLineDelimiter
      * @return File Lines
      * @throws ReaderException
      */
-    public List<String> readFile(final String completeFileName,
-            final String fileEncoding, final String endLineDelimiter)
-            throws ReaderException {
+    public List<String> readFile(final SupportedSource source,
+            final String completeFileName, final String fileEncoding,
+            final String endLineDelimiter) throws ReaderException {
         return new ArrayList<>(
-                Arrays.asList(readFileAsString(completeFileName, fileEncoding)
+                Arrays.asList(readFileAsString(source, completeFileName,
+                        fileEncoding)
                         .split(StringUtils.isEmpty(endLineDelimiter) ? Constants.DEFAULT_FILE_END_LINE_DELIMITER
                                 : endLineDelimiter)));
     }
@@ -41,16 +47,21 @@ public class UkubukaReader {
     /**
      * Read File
      * 
+     * @param source
      * @param completeFileName
+     * @param fileEncoding
      * @return File Lines
      * @throws ReaderException
      */
-    public String readFileAsString(final String completeFileName,
-            final String fileEncoding) throws ReaderException {
+    public String readFileAsString(final SupportedSource source,
+            final String completeFileName, final String fileEncoding)
+            throws ReaderException {
         try {
             return FileUtils
                     .readFileToString(
-                            new File(completeFileName),
+                            source == SupportedSource.URL ? FileUtils
+                                    .toFile(new URL(completeFileName))
+                                    : new File(completeFileName),
                             StringUtils.isEmpty(fileEncoding) ? Constants.DEFAULT_FILE_ENCODING
                                     : fileEncoding);
         } catch (IOException ex) {

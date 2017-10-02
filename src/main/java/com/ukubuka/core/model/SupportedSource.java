@@ -27,4 +27,19 @@ public enum SupportedSource {
     public String getSource() {
         return source;
     }
+
+    /**
+     * Get Source
+     * 
+     * @param source
+     * @return SupportedSource
+     */
+    public static SupportedSource getSource(final String source) {
+        for (final SupportedSource supportedSource : SupportedSource.values()) {
+            if (supportedSource.getSource().equals(source)) {
+                return supportedSource;
+            }
+        }
+        return SupportedSource.FILE;
+    }
 }

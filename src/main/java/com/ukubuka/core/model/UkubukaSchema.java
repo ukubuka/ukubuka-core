@@ -1,8 +1,10 @@
 package com.ukubuka.core.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Ukubuka Schema Model
@@ -13,8 +15,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UkubukaSchema {
 
+    @JsonProperty("extract")
     private List<Extract> extracts;
+
+    @JsonProperty("transform")
     private List<Transform> transforms;
+
+    @JsonProperty("load")
     private List<Load> loads;
 
     /**
@@ -25,61 +32,14 @@ public class UkubukaSchema {
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Extract {
-        private SupportedSource source;
+        @JsonProperty("type")
         private SupportedFileType type;
+
+        @JsonProperty("location")
         private String location;
-        private List<Flag> flags;
 
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Flag {
-            private String key;
-            private String value;
-
-            /**
-             * @return the key
-             */
-            public String getKey() {
-                return key;
-            }
-
-            /**
-             * @param key
-             *            the key to set
-             */
-            public void setKey(String key) {
-                this.key = key;
-            }
-
-            /**
-             * @return the value
-             */
-            public String getValue() {
-                return value;
-            }
-
-            /**
-             * @param value
-             *            the value to set
-             */
-            public void setValue(String value) {
-                this.value = value;
-            }
-        }
-
-        /**
-         * @return the source
-         */
-        public SupportedSource getSource() {
-            return source;
-        }
-
-        /**
-         * @param source
-         *            the source to set
-         */
-        public void setSource(SupportedSource source) {
-            this.source = source;
-        }
+        @JsonProperty("flags")
+        private Map<String, Object> flags;
 
         /**
          * @return the type
@@ -114,7 +74,7 @@ public class UkubukaSchema {
         /**
          * @return the flags
          */
-        public List<Flag> getFlags() {
+        public Map<String, Object> getFlags() {
             return flags;
         }
 
@@ -122,7 +82,7 @@ public class UkubukaSchema {
          * @param flags
          *            the flags to set
          */
-        public void setFlags(List<Flag> flags) {
+        public void setFlags(Map<String, Object> flags) {
             this.flags = flags;
         }
     }
