@@ -55,7 +55,7 @@ public class UkubukaBaseParser {
         String singleLine = fileContents
                 .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER)[0];
         int columnSize = singleLine.length()
-                - singleLine.replace(
+                - singleLine.replaceAll(
                         Constants.DELIMITER_REPLACE_REGEX_START
                                 + Constants.DEFAULT_FILE_DELIMITER
                                 + Constants.DELIMITER_REPLACE_REGEX_END, "")
@@ -73,13 +73,11 @@ public class UkubukaBaseParser {
      */
     private String stitchHeader(final int columnSize) {
         StringBuilder builder = new StringBuilder();
-
         /* Stitch Header*/
         for (int i = 0; i < columnSize; i++) {
             builder.append(Constants.DEFAULT_COLUMN_NAME_PREFIX).append(i)
                     .append(Constants.DEFAULT_FILE_DELIMITER);
         }
-
         return builder.append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                 .toString();
     }
@@ -100,7 +98,7 @@ public class UkubukaBaseParser {
             return StringUtils.isEmpty(fileDelimiter) ? reader
                     .readFileAsString(source, completeFileName, fileEncoding)
                     : reader.readFileAsString(source, completeFileName,
-                            fileEncoding).replace(
+                            fileEncoding).replaceAll(
                             Constants.DELIMITER_REPLACE_REGEX_START
                                     + fileDelimiter
                                     + Constants.DELIMITER_REPLACE_REGEX_END,
