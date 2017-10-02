@@ -16,7 +16,7 @@ import com.ukubuka.core.parser.UkubukaParser;
  * @author agrawroh
  * @version v1.0
  */
-@Component
+@Component("UkubukaDFileParser")
 public class UkubukaDFileParser extends UkubukaBaseParser implements
         UkubukaParser {
 
@@ -25,7 +25,7 @@ public class UkubukaDFileParser extends UkubukaBaseParser implements
      */
     @Override
     public JSONArray parseFile(final String completeFileName,
-            Map<String, String> flags) throws ParserException {
+            Map<String, Object> flags) throws ParserException {
         return CDL.toJSONArray(super.readWithOptions(completeFileName, flags));
     }
 
