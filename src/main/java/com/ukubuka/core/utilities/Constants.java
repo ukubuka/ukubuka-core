@@ -15,6 +15,6 @@ public final class Constants {
 
     /********************************** Parser Constants **********************************/
     public static final String DEFAULT_COLUMN_NAME_PREFIX = "column_";
-    public static final String DELIMITER_REPLACE_REGEX_START = "/(";
-    public static final String DELIMITER_REPLACE_REGEX_END = ")(?=(?:[^\"]|\"[^\"]*\")*$)/";
+    public static final String DELIMITER_REPLACE_REGEX_START = "(?!\\B\"[^\"]*)";
+    public static final String DELIMITER_REPLACE_REGEX_END = "(?![^\"]*\"\\B)";
 }
