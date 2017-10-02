@@ -60,7 +60,7 @@ public class UkubukaBaseParser {
                                 + Constants.DEFAULT_FILE_DELIMITER
                                 + Constants.DELIMITER_REPLACE_REGEX_END, "")
                         .length();
-        return new StringBuilder().append(stitchHeader(columnSize))
+        return new StringBuilder().append(stitchHeader(1 + columnSize))
                 .append(fileContents).toString();
     }
 
@@ -78,8 +78,9 @@ public class UkubukaBaseParser {
             builder.append(Constants.DEFAULT_COLUMN_NAME_PREFIX).append(i)
                     .append(Constants.DEFAULT_FILE_DELIMITER);
         }
-        return builder.append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
-                .toString();
+        return new StringBuilder()
+                .append(builder.substring(0, builder.length() - 1))
+                .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER).toString();
     }
 
     /**
