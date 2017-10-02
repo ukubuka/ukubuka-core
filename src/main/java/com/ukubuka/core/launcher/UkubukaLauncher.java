@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.ukubuka.core.execute.UkubukaExecutorService;
+import com.ukubuka.core.parser.impl.UkubukaDFileParser;
 
 /**
  * Ukubuka Root
@@ -37,10 +37,10 @@ public class UkubukaLauncher {
      * @throws Exception
      */
     private void execute(String[] arguments) throws Exception {
-        /* Read Schema File*/
-        UkubukaExecutorService executorService = (UkubukaExecutorService) getAppContext()
-                .getBean(UkubukaExecutorService.class);
-        executorService.execute(arguments[0]);
+        /* Read File*/
+        UkubukaDFileParser parser = (UkubukaDFileParser) getAppContext()
+                .getBean(UkubukaDFileParser.class);
+        System.out.println(parser.getParserInfo());
     }
 
     /**
