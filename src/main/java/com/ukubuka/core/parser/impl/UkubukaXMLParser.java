@@ -8,18 +8,12 @@ import org.springframework.stereotype.Component;
 import com.ukubuka.core.exception.ParserException;
 import com.ukubuka.core.parser.UkubukaParser;
 
-/**
- * Ukubuka XML Parser
- * 
- * @author agrawroh
- * @version v1.0
- */
-@Component("UkubukaXMLParser")
+@Component
 public class UkubukaXMLParser implements UkubukaParser {
 
     @Override
     public JSONArray parseFile(String completeFileName,
-            Map<String, Object> flags) throws ParserException {
+            Map<String, String> flags) throws ParserException {
         // TODO Auto-generated method stub
         return null;
     }

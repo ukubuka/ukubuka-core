@@ -22,7 +22,7 @@ public interface UkubukaParser {
      * @return JSON Array For File Contents
      * @throws ParserException
      */
-    JSONArray parseFile(final String completeFileName, Map<String, Object> flags)
+    JSONArray parseFile(final String completeFileName, Map<String, String> flags)
             throws ParserException;
 
     /**
