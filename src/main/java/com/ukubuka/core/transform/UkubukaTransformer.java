@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
 import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.TransformOperation;
 import com.ukubuka.core.model.UkubukaSchema.Operations;
 import com.ukubuka.core.utilities.Constants;
@@ -33,7 +34,7 @@ public class UkubukaTransformer {
      * @throws TransformException
      */
     public void performOperations(List<String> fileHeader,
-            List<List<String>> fileRecords, List<Operations> operationsList)
+            List<FileRecord> fileRecords, List<Operations> operationsList)
             throws TransformException {
         /* Iterate Operations */
         for (final Operations operation : operationsList) {
@@ -46,7 +47,8 @@ public class UkubukaTransformer {
                     + operation.getTarget() + Constants.COLUMN_ENCOLSING_QUOTE;
 
             /* Check Whether Column Exists */
-            if (!fileHeader.contains(source)) {
+            if (operation.getType() != TransformOperation.ADD
+                    && !fileHeader.contains(source)) {
                 throw new TransformException("Column Not Found!");
             }
 
@@ -67,7 +69,7 @@ public class UkubukaTransformer {
      * @throws TransformException
      */
     private void performOperation(List<String> fileHeader,
-            List<List<String>> fileRecords,
+            List<FileRecord> fileRecords,
             final TransformOperation operationType, final String source,
             final String target) throws TransformException {
         switch (operationType) {
@@ -113,7 +115,7 @@ public class UkubukaTransformer {
      * @param rowData
      */
     private void doDelete(List<String> fileHeader,
-            List<List<String>> fileRecords, final String source) {
+            List<FileRecord> fileRecords, final String source) {
         /* Get Index */
         int index = fileHeader.indexOf(source);
 
@@ -121,8 +123,8 @@ public class UkubukaTransformer {
         fileHeader.remove(index);
 
         /* Remove Records */
-        for (final List<String> fileRecord : fileRecords) {
-            fileRecord.remove(index);
+        for (final FileRecord fileRecord : fileRecords) {
+            fileRecord.getData().remove(index);
         }
     }
 
@@ -134,14 +136,16 @@ public class UkubukaTransformer {
      * @param target
      * @param fileRecords
      */
-    private void doAdd(List<String> fileHeader, List<List<String>> fileRecords,
+    private void doAdd(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
         /* Add Source */
         fileHeader.add(source);
 
         /* Add New Column Values */
-        for (final List<String> fileRecord : fileRecords) {
-            fileRecord.add(expressionEvaluator.evaluate(fileRecord, target));
+        for (final FileRecord fileRecord : fileRecords) {
+            fileRecord.getData().add(
+                    String.valueOf(expressionEvaluator.evaluate(fileRecord,
+                            target)));
         }
     }
 }

@@ -1,11 +1,11 @@
 package com.ukubuka.core.evaluator;
 
-import java.util.List;
-
-import org.springframework.expression.Expression;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
+
+import com.ukubuka.core.model.FileRecord;
 
 /**
  * Ukubuka Expression Evaluator
@@ -16,23 +16,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class UkubukaExpressionEvaluator {
 
-    public static void main(String[] args) {
-        new UkubukaExpressionEvaluator().evaluate(null, null);
-    }
+    /************************* Dependency Injections *************************/
+    @Autowired
+    private ExpressionParser expressionParser;
 
     /**
      * Evaluate
      * 
      * @return Evaluated Expression
      */
-    public String evaluate(final List<String> fileContents,
-            final String expression) {
-        ExpressionParser parser = new SpelExpressionParser();
-        Expression ex = parser
-                .parseExpression("T(java.lang.Math).log(100) + 100");
-        Object o = ex.getValue();
-        System.out.println(o);
-
-        return null;
+    public Object evaluate(final FileRecord fileRecord, final String expression) {
+        return expressionParser.parseExpression(
+                expression.substring(1, expression.length() - 1)).getValue(
+                new StandardEvaluationContext(fileRecord));
     }
 }

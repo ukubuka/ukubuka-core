@@ -11,7 +11,18 @@ import java.util.List;
 public class FileContents {
 
     private List<String> header;
-    private List<List<String>> data;
+    private List<FileRecord> data;
+
+    /***************************** Default Constructor ****************************/
+    public FileContents() {
+        /* Do Nothing */
+    }
+
+    /****************************** Copy Constructor ******************************/
+    public FileContents(List<String> header, List<FileRecord> data) {
+        this.header = header;
+        this.data = data;
+    }
 
     /**
      * @return the header
@@ -31,7 +42,7 @@ public class FileContents {
     /**
      * @return the data
      */
-    public List<List<String>> getData() {
+    public List<FileRecord> getData() {
         return data;
     }
 
@@ -39,7 +50,7 @@ public class FileContents {
      * @param data
      *            the data to set
      */
-    public void setData(List<List<String>> data) {
+    public void setData(List<FileRecord> data) {
         this.data = data;
     }
 }

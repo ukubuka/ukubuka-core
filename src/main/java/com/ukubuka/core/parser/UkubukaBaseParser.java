@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ukubuka.core.model.FileContents;
+import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -40,10 +41,11 @@ public class UkubukaBaseParser {
                 .split(Constants.DEFAULT_FILE_DELIMITER))));
 
         /* Set Data */
-        List<List<String>> fileData = new ArrayList<>();
+        List<FileRecord> fileData = new ArrayList<>();
         for (int i = 1; i < fileLines.length; i++) {
-            fileData.add(new ArrayList<>(Arrays.asList(fileLines[i]
-                    .split(Constants.DEFAULT_FILE_DELIMITER))));
+            fileData.add(new FileRecord(new ArrayList<>(Arrays
+                    .asList(fileLines[i]
+                            .split(Constants.DEFAULT_FILE_DELIMITER)))));
         }
         fileContents.setData(fileData);
 
@@ -64,8 +66,8 @@ public class UkubukaBaseParser {
                 - singleLine.replaceAll(
                         Constants.DELIMITER_REPLACE_REGEX_START
                                 + Constants.DEFAULT_FILE_DELIMITER
-                                + Constants.DELIMITER_REPLACE_REGEX_END, "")
-                        .length();
+                                + Constants.DELIMITER_REPLACE_REGEX_END,
+                        Constants.EMPTY_STRING).length();
         return new StringBuilder().append(stitchHeader(1 + columnSize))
                 .append(fileContents).toString();
     }

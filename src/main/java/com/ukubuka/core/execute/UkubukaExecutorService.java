@@ -92,9 +92,11 @@ public class UkubukaExecutorService {
             if (!CollectionUtils.isEmpty(fileTransforms)) {
                 ukubukaTransformer.performOperations(fileContents.getHeader(),
                         fileContents.getData(), fileTransforms);
-                System.out.println(writer.writeJSON(fileContents.getHeader(),
-                        fileContents.getData()));
             }
+
+            /* Write JSON */
+            System.out.println(writer.writeJSON(fileContents.getHeader(),
+                    fileContents.getData()));
         }
     }
 

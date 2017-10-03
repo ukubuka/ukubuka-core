@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.utilities.Constants;
 
 /**
@@ -26,7 +27,7 @@ public class UkubukaWriter {
      * @return JSONArray
      */
     public JSONArray writeJSON(List<String> fileHeader,
-            List<List<String>> fileRecords) {
+            List<FileRecord> fileRecords) {
         /* CReate New Builder Instance */
         StringBuilder fileContents = new StringBuilder();
 
@@ -36,11 +37,11 @@ public class UkubukaWriter {
                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
 
         /* Iterate Records */
-        for (final List<String> fileRecord : fileRecords) {
+        for (final FileRecord fileRecord : fileRecords) {
             /* Append Record */
             fileContents.append(
                     StringUtils.arrayToCommaDelimitedString(fileRecord
-                            .toArray())).append(
+                            .getData().toArray())).append(
                     Constants.DEFAULT_FILE_END_LINE_DELIMITER);
         }
 
