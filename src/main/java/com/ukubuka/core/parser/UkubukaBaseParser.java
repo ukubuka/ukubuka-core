@@ -1,14 +1,13 @@
 package com.ukubuka.core.parser;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
-import com.ukubuka.core.exception.ParserException;
-import com.ukubuka.core.exception.ReaderException;
-import com.ukubuka.core.model.ExtractFlags;
-import com.ukubuka.core.model.SupportedSource;
+import com.ukubuka.core.model.FileContents;
+import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -20,28 +19,37 @@ import com.ukubuka.core.utilities.Constants;
  */
 public class UkubukaBaseParser {
 
+    /************************* Dependency Injections *************************/
     @Autowired
     private UkubukaReader reader;
 
     /**
-     * Read With Options
+     * Get File Contents
      * 
-     * @param completeFileName
-     * @return File Content
-     * @throws ParserException
+     * @param fileContent
+     * @return File Contents
      */
-    public String readWithOptions(final String completeFileName,
-            Map<String, Object> flags) throws ParserException {
-        boolean withHeader = null != flags
-                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) ? (boolean) flags
-                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) : true;
-        SupportedSource source = null == flags.get(ExtractFlags.SOURCE
-                .getFlag()) ? SupportedSource.FILE : SupportedSource
-                .getSource((String) flags.get(ExtractFlags.SOURCE.getFlag()));
-        String fileContents = readWithOptions(source, completeFileName,
-                (String) flags.get(ExtractFlags.FILE_ENCODING.getFlag()),
-                (String) flags.get(ExtractFlags.FILE_DELIMITER.getFlag()));
-        return withHeader ? fileContents : appendHeader(fileContents);
+    public FileContents getFileContents(final String fileContent) {
+        FileContents fileContents = new FileContents();
+
+        /* Get File Lines */
+        String[] fileLines = fileContent
+                .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+
+        /* Set Header */
+        fileContents.setHeader(new ArrayList<>(Arrays.asList(fileLines[0]
+                .split(Constants.DEFAULT_FILE_DELIMITER))));
+
+        /* Set Data */
+        List<FileRecord> fileData = new ArrayList<>();
+        for (int i = 1; i < fileLines.length; i++) {
+            fileData.add(new FileRecord(new ArrayList<>(Arrays
+                    .asList(fileLines[i]
+                            .split(Constants.DEFAULT_FILE_DELIMITER)))));
+        }
+        fileContents.setData(fileData);
+
+        return fileContents;
     }
 
     /**
@@ -50,7 +58,7 @@ public class UkubukaBaseParser {
      * @param fileContents
      * @return File Contents With Glued Header
      */
-    private String appendHeader(final String fileContents) {
+    public String appendHeader(final String fileContents) {
         /* Get Column Size */
         String singleLine = fileContents
                 .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER)[0];
@@ -58,8 +66,8 @@ public class UkubukaBaseParser {
                 - singleLine.replaceAll(
                         Constants.DELIMITER_REPLACE_REGEX_START
                                 + Constants.DEFAULT_FILE_DELIMITER
-                                + Constants.DELIMITER_REPLACE_REGEX_END, "")
-                        .length();
+                                + Constants.DELIMITER_REPLACE_REGEX_END,
+                        Constants.EMPTY_STRING).length();
         return new StringBuilder().append(stitchHeader(1 + columnSize))
                 .append(fileContents).toString();
     }
@@ -84,28 +92,9 @@ public class UkubukaBaseParser {
     }
 
     /**
-     * Read With Options
-     * 
-     * @param completeFileName
-     * @param fileEncoding
-     * @param fileDelimiter
-     * @return File Content
-     * @throws ParserException
+     * @return the reader
      */
-    private String readWithOptions(final SupportedSource source,
-            final String completeFileName, final String fileEncoding,
-            final String fileDelimiter) throws ParserException {
-        try {
-            return StringUtils.isEmpty(fileDelimiter) ? reader
-                    .readFileAsString(source, completeFileName, fileEncoding)
-                    : reader.readFileAsString(source, completeFileName,
-                            fileEncoding).replaceAll(
-                            Constants.DELIMITER_REPLACE_REGEX_START
-                                    + fileDelimiter
-                                    + Constants.DELIMITER_REPLACE_REGEX_END,
-                            Constants.DEFAULT_FILE_DELIMITER);
-        } catch (ReaderException ex) {
-            throw new ParserException(ex);
-        }
+    public UkubukaReader getReader() {
+        return reader;
     }
 }

@@ -2,10 +2,10 @@ package com.ukubuka.core.parser.impl;
 
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.parser.UkubukaParser;
 
 /**
@@ -18,7 +18,7 @@ import com.ukubuka.core.parser.UkubukaParser;
 public class UkubukaXMLParser implements UkubukaParser {
 
     @Override
-    public JSONArray parseFile(String completeFileName,
+    public FileContents parseFile(String completeFileName,
             Map<String, Object> flags) throws ParserException {
         // TODO Auto-generated method stub
         return null;
