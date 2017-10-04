@@ -9,7 +9,7 @@ import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
 import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.TransformOperation;
-import com.ukubuka.core.model.UkubukaSchema.Operations;
+import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
 import com.ukubuka.core.utilities.Constants;
 
 /**
@@ -34,10 +34,10 @@ public class UkubukaTransformer {
      * @throws TransformException
      */
     public void performOperations(List<String> fileHeader,
-            List<FileRecord> fileRecords, List<Operations> operationsList)
-            throws TransformException {
+            List<FileRecord> fileRecords,
+            List<TransformOperations> operationsList) throws TransformException {
         /* Iterate Operations */
-        for (final Operations operation : operationsList) {
+        for (final TransformOperations operation : operationsList) {
             /* Get Source & Target Values */
             String source = fileHeader.get(0).indexOf(
                     Constants.COLUMN_ENCOLSING_QUOTE) >= 0 ? Constants.COLUMN_ENCOLSING_QUOTE

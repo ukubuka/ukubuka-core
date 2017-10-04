@@ -22,7 +22,7 @@ public class UkubukaSchema {
     private List<Transform> transforms;
 
     @JsonProperty("load")
-    private List<Load> loads;
+    private Load loads;
 
     /**
      * Extract
@@ -117,7 +117,7 @@ public class UkubukaSchema {
         private String id;
 
         @JsonProperty("operations")
-        private List<Operations> operations;
+        private List<TransformOperations> operations;
 
         /**
          * @return the id
@@ -137,7 +137,7 @@ public class UkubukaSchema {
         /**
          * @return the operations
          */
-        public List<Operations> getOperations() {
+        public List<TransformOperations> getOperations() {
             return operations;
         }
 
@@ -145,19 +145,19 @@ public class UkubukaSchema {
          * @param operations
          *            the operations to set
          */
-        public void setOperations(List<Operations> operations) {
+        public void setOperations(List<TransformOperations> operations) {
             this.operations = operations;
         }
     }
 
     /**
-     * Operations
+     * Transform Operations
      * 
      * @author agrawroh
      * @version v1.0
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Operations {
+    public static class TransformOperations {
         @JsonProperty("type")
         private TransformOperation type;
 
@@ -221,7 +221,140 @@ public class UkubukaSchema {
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Load {
+        @JsonProperty("id")
+        private String id;
 
+        @JsonProperty("location")
+        private String location;
+
+        @JsonProperty("operations")
+        private LoadOperations operations;
+
+        /**
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+
+        /**
+         * @param id
+         *            the id to set
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        /**
+         * @return the operations
+         */
+        public LoadOperations getOperations() {
+            return operations;
+        }
+
+        /**
+         * @param operations
+         *            the operations to set
+         */
+        public void setOperations(LoadOperations operations) {
+            this.operations = operations;
+        }
+
+        /**
+         * @return the location
+         */
+        public String getLocation() {
+            return location;
+        }
+
+        /**
+         * @param location
+         *            the location to set
+         */
+        public void setLocation(String location) {
+            this.location = location;
+        }
+    }
+
+    /**
+     * Load Operations
+     * 
+     * @author agrawroh
+     * @version v1.0
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class LoadOperations {
+        @JsonProperty("type")
+        private LoadOperation type;
+
+        @JsonProperty("header")
+        private String header;
+
+        @JsonProperty("data")
+        private List<String> data;
+
+        @JsonProperty("filter")
+        private String filter;
+
+        /**
+         * @return the type
+         */
+        public LoadOperation getType() {
+            return type;
+        }
+
+        /**
+         * @param type
+         *            the type to set
+         */
+        public void setType(LoadOperation type) {
+            this.type = type;
+        }
+
+        /**
+         * @return the filter
+         */
+        public String getFilter() {
+            return filter;
+        }
+
+        /**
+         * @param filter
+         *            the filter to set
+         */
+        public void setFilter(String filter) {
+            this.filter = filter;
+        }
+
+        /**
+         * @return the header
+         */
+        public String getHeader() {
+            return header;
+        }
+
+        /**
+         * @param header
+         *            the header to set
+         */
+        public void setHeader(String header) {
+            this.header = header;
+        }
+
+        /**
+         * @return the data
+         */
+        public List<String> getData() {
+            return data;
+        }
+
+        /**
+         * @param data
+         *            the data to set
+         */
+        public void setData(List<String> data) {
+            this.data = data;
+        }
     }
 
     /**
@@ -257,7 +390,7 @@ public class UkubukaSchema {
     /**
      * @return the loads
      */
-    public List<Load> getLoads() {
+    public Load getLoads() {
         return loads;
     }
 
@@ -265,7 +398,7 @@ public class UkubukaSchema {
      * @param loads
      *            the loads to set
      */
-    public void setLoads(List<Load> loads) {
+    public void setLoads(Load loads) {
         this.loads = loads;
     }
 }
