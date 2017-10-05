@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
+import com.ukubuka.core.model.SupportedFileType;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Extract;
@@ -40,11 +43,16 @@ import com.ukubuka.core.writer.UkubukaWriter;
  */
 @Service
 public class UkubukaExecutorService {
-    /**************************** Global Variables ***************************/
+
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaExecutorService.class);
+
+    /*********************************** Global Variables ***********************************/
     private static final ObjectReader SCHEMA_READER = new ObjectMapper()
             .readerFor(UkubukaSchema.class);
 
-    /************************* Dependency Injections *************************/
+    /********************************* Dependency Injections ********************************/
     @Autowired
     private UkubukaReader reader;
 
@@ -150,16 +158,44 @@ public class UkubukaExecutorService {
                 fileContents.getData().addAll(dataFiles.get(fileId).getData());
             }
 
-            /* Write JSON */
+            /* Write File */
             try {
-                Utilities.writeFile(
-                        load.getLocation(),
-                        writer.prettyPrint(writer.writeJSON(
-                                fileContents.getHeader(),
-                                fileContents.getData()).toString()));
-            } catch (IOException ex) {
+                writeFile(load.getType(), load.getLocation(),
+                        fileContents.getHeader(), fileContents.getData());
+            } catch (ParserException | IOException ex) {
                 throw new WriterException(ex);
             }
+        }
+    }
+
+    /**
+     * Write File
+     * 
+     * @param supportedFileType
+     * @param completeFileName
+     * @param header
+     * @param data
+     * @throws IOException
+     * @throws ParserException
+     */
+    private void writeFile(final SupportedFileType supportedFileType,
+            final String completeFileName, List<String> header,
+            List<FileRecord> data) throws IOException, ParserException {
+        /* Get File Type */
+        switch (supportedFileType) {
+        /* Delimited File */
+            case CSV:
+                Utilities.writeFile(completeFileName,
+                        writer.writeCSV(header, data).toString());
+                break;
+            /* XML File */
+            case JSON:
+                Utilities.writeFile(completeFileName, writer.prettyPrint(writer
+                        .writeJSON(header, data).toString()));
+                break;
+            /* Unsupported File */
+            default:
+                throw new ParserException("File Type Not Supported!");
         }
     }
 

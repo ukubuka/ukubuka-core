@@ -224,6 +224,9 @@ public class UkubukaSchema {
         @JsonProperty("id")
         private String id;
 
+        @JsonProperty("type")
+        private SupportedFileType type;
+
         @JsonProperty("location")
         private String location;
 
@@ -273,6 +276,21 @@ public class UkubukaSchema {
          */
         public void setLocation(String location) {
             this.location = location;
+        }
+
+        /**
+         * @return the type
+         */
+        public SupportedFileType getType() {
+            return type;
+        }
+
+        /**
+         * @param type
+         *            the type to set
+         */
+        public void setType(SupportedFileType type) {
+            this.type = type;
         }
     }
 

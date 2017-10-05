@@ -19,7 +19,7 @@ import com.ukubuka.core.utilities.Constants;
  */
 public class UkubukaBaseParser {
 
-    /************************* Dependency Injections *************************/
+    /******************************** Dependency Injections *********************************/
     @Autowired
     private UkubukaReader reader;
 

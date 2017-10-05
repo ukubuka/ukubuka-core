@@ -22,7 +22,7 @@ import com.ukubuka.core.utilities.Constants;
 @Component
 public class UkubukaWriter {
 
-    /************************* Dependency Injections *************************/
+    /******************************** Dependency Injections *********************************/
     @Autowired
     private ObjectMapper mapper;
 
@@ -35,6 +35,30 @@ public class UkubukaWriter {
      */
     public JSONArray writeJSON(List<String> fileHeader,
             List<FileRecord> fileRecords) {
+        /* Convert To JSON */
+        return CDL.toJSONArray(knitFile(fileHeader, fileRecords));
+    }
+
+    /**
+     * Write CSV
+     * 
+     * @param fileHeader
+     * @param fileRecords
+     * @return CSV String
+     */
+    public String writeCSV(List<String> fileHeader, List<FileRecord> fileRecords) {
+        /* Convert To CSV */
+        return knitFile(fileHeader, fileRecords);
+    }
+
+    /**
+     * Knit File
+     * 
+     * @param fileHeader
+     * @param fileRecords
+     * @return Delimited String
+     */
+    public String knitFile(List<String> fileHeader, List<FileRecord> fileRecords) {
         /* CReate New Builder Instance */
         StringBuilder fileContents = new StringBuilder();
 
@@ -52,8 +76,8 @@ public class UkubukaWriter {
                     Constants.DEFAULT_FILE_END_LINE_DELIMITER);
         }
 
-        /* Convert To JSON */
-        return CDL.toJSONArray(fileContents.toString());
+        /* Vomit String */
+        return fileContents.toString();
     }
 
     /**

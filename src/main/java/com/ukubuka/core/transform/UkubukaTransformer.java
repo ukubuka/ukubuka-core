@@ -1,5 +1,6 @@
 package com.ukubuka.core.transform;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import com.ukubuka.core.utilities.Constants;
 @Component
 public class UkubukaTransformer {
 
-    /************************* Dependency Injections *************************/
+    /******************************** Dependency Injections *********************************/
     @Autowired
     private UkubukaExpressionEvaluator expressionEvaluator;
 
@@ -83,9 +84,29 @@ public class UkubukaTransformer {
                 doDelete(fileHeader, fileRecords, source);
                 break;
 
+            /* Column Delete Operation */
+            case REMOVE:
+                doDelete(fileHeader, fileRecords, source);
+                break;
+
             /* Column Add Operation */
             case ADD:
                 doAdd(fileHeader, fileRecords, source, target);
+                break;
+
+            /* Column Add Operation */
+            case NEW:
+                doAdd(fileHeader, fileRecords, source, target);
+                break;
+
+            /* Column Move Operation */
+            case MOVE:
+                doMove(fileHeader, fileRecords, source, target);
+                break;
+
+            /* Column Swap Operation */
+            case SWAP:
+                doSwap(fileHeader, fileRecords, source, target);
                 break;
 
             /* Unsupported Operation */
@@ -146,6 +167,55 @@ public class UkubukaTransformer {
             fileRecord.getData().add(
                     String.valueOf(expressionEvaluator.evaluate(fileRecord,
                             target)));
+        }
+    }
+
+    /**
+     * Perform Move Operation
+     * 
+     * @param fileHeader
+     * @param source
+     * @param target
+     * @param fileRecords
+     */
+    private void doMove(List<String> fileHeader, List<FileRecord> fileRecords,
+            final String source, final String target) {
+        /* Get Source & Target Indices */
+        int sourceIndex = fileHeader.indexOf(source);
+        int targetIndex = Integer.parseInt(target.replace(
+                Constants.COLUMN_ENCOLSING_QUOTE, Constants.EMPTY_STRING));
+
+        /* Move Columns */
+        String header = fileHeader.remove(sourceIndex);
+        fileHeader.add(targetIndex, header);
+
+        /* Move Data Column Values */
+        for (final FileRecord fileRecord : fileRecords) {
+            String data = fileRecord.getData().remove(sourceIndex);
+            fileRecord.getData().add(targetIndex, data);
+        }
+    }
+
+    /**
+     * Perform Swap Operation
+     * 
+     * @param fileHeader
+     * @param source
+     * @param target
+     * @param fileRecords
+     */
+    private void doSwap(List<String> fileHeader, List<FileRecord> fileRecords,
+            final String source, final String target) {
+        /* Get Source & Target Indices */
+        int sourceIndex = fileHeader.indexOf(source);
+        int targetIndex = fileHeader.indexOf(target);
+
+        /* Swap Columns */
+        Collections.swap(fileHeader, sourceIndex, targetIndex);
+
+        /* Swap Data Column Values */
+        for (final FileRecord fileRecord : fileRecords) {
+            Collections.swap(fileRecord.getData(), sourceIndex, targetIndex);
         }
     }
 }
