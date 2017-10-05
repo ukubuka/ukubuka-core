@@ -2,6 +2,8 @@ package com.ukubuka.core.parser.impl;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,12 +26,18 @@ import com.ukubuka.core.utilities.Constants;
 public class UkubukaDFileParser extends UkubukaBaseParser implements
         UkubukaParser {
 
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaDFileParser.class);
+
     /**
      * Parse File
      */
     @Override
     public FileContents parseFile(final String completeFileName,
             Map<String, Object> flags) throws ParserException {
+        LOGGER.info("Parsing Delimited File - Location: " + completeFileName
+                + " | Flags: " + flags);
         return super.getFileContents(readWithOptions(completeFileName, flags));
     }
 
