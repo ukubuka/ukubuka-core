@@ -87,7 +87,9 @@ public class UkubukaExecutorService {
         UkubukaSchema ukubukaSchema = readSchema(ukubukaSchemaFile);
 
         /* Iterate Extracts */
+        LOGGER.info("Performing Extracts...");
         for (final Extract extract : ukubukaSchema.getExtracts()) {
+            LOGGER.info("Performing Extract: HC" + extract.hashCode());
             FileContents fileContents = null;
 
             /* Get File Type */
@@ -108,6 +110,7 @@ public class UkubukaExecutorService {
             }
 
             /* Perform Transformations */
+            LOGGER.info("Performing Transformations...");
             performTransformation(extract.getId(),
                     ukubukaSchema.getTransforms(), fileContents);
 
@@ -116,6 +119,7 @@ public class UkubukaExecutorService {
         }
 
         /* Perform Load */
+        LOGGER.info("Performing Load...");
         performLoad(ukubukaSchema.getLoads(), dataFiles);
     }
 
@@ -134,6 +138,7 @@ public class UkubukaExecutorService {
         List<TransformOperations> fileTransforms = getFileTransformationDetails(
                 fileId, transforms);
         if (!CollectionUtils.isEmpty(fileTransforms)) {
+            LOGGER.info("Transform Count: #" + fileTransforms.size());
             ukubukaTransformer.performOperations(fileContents.getHeader(),
                     fileContents.getData(), fileTransforms);
         }
@@ -150,6 +155,9 @@ public class UkubukaExecutorService {
             final Map<String, FileContents> dataFiles) throws WriterException {
         /* Check Whether Valid Load Operations */
         if (null != load) {
+            LOGGER.info("Performing Load: HC" + load.hashCode());
+
+            /* Get File Contents */
             FileContents fileContents = new FileContents(
                     new ArrayList<String>(), new ArrayList<FileRecord>());
             fileContents.setHeader(dataFiles.get(
@@ -159,7 +167,10 @@ public class UkubukaExecutorService {
             }
 
             /* Write File */
+            LOGGER.info("Writing File...");
             try {
+                LOGGER.info("ID: " + load.getId() + " | Type: "
+                        + load.getType() + " | Location: " + load.getLocation());
                 writeFile(load.getType(), load.getLocation(),
                         fileContents.getHeader(), fileContents.getData());
             } catch (ParserException | IOException ex) {

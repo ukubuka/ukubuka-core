@@ -3,6 +3,8 @@ package com.ukubuka.core.transform;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,10 @@ import com.ukubuka.core.utilities.Constants;
 @Component
 public class UkubukaTransformer {
 
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaTransformer.class);
+
     /******************************** Dependency Injections *********************************/
     @Autowired
     private UkubukaExpressionEvaluator expressionEvaluator;
@@ -39,6 +45,8 @@ public class UkubukaTransformer {
             List<TransformOperations> operationsList) throws TransformException {
         /* Iterate Operations */
         for (final TransformOperations operation : operationsList) {
+            LOGGER.info("Performing Transform: HC" + operation.hashCode());
+
             /* Get Source & Target Values */
             String source = fileHeader.get(0).indexOf(
                     Constants.COLUMN_ENCOLSING_QUOTE) >= 0 ? Constants.COLUMN_ENCOLSING_QUOTE
@@ -50,7 +58,8 @@ public class UkubukaTransformer {
             /* Check Whether Column Exists */
             if (operation.getType() != TransformOperation.ADD
                     && !fileHeader.contains(source)) {
-                throw new TransformException("Column Not Found!");
+                throw new TransformException("Column Not Found! Name: "
+                        + source + " | Header: " + fileHeader);
             }
 
             /* Perform Operation */
@@ -124,6 +133,9 @@ public class UkubukaTransformer {
      */
     private void doRename(List<String> fileHeader, final String source,
             final String target) {
+        LOGGER.info("Performing Rename Operation - Source: " + source
+                + " | Target: " + target + " | Header: " + fileHeader);
+
         /* Rename New Header */
         fileHeader.set(fileHeader.indexOf(source), target);
     }
@@ -137,6 +149,9 @@ public class UkubukaTransformer {
      */
     private void doDelete(List<String> fileHeader,
             List<FileRecord> fileRecords, final String source) {
+        LOGGER.info("Performing Delete Operation - Source: " + source
+                + " | Header: " + fileHeader);
+
         /* Get Index */
         int index = fileHeader.indexOf(source);
 
@@ -159,14 +174,18 @@ public class UkubukaTransformer {
      */
     private void doAdd(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
+        LOGGER.info("Performing Add Operation - Source: " + source
+                + " | Target: " + target + " | Header: " + fileHeader);
+
         /* Add Source */
         fileHeader.add(source);
 
         /* Add New Column Values */
         for (final FileRecord fileRecord : fileRecords) {
-            fileRecord.getData().add(
-                    String.valueOf(expressionEvaluator.evaluate(fileRecord,
-                            target)));
+            String expressionValue = String.valueOf(expressionEvaluator
+                    .evaluate(fileRecord, target));
+            LOGGER.info("Evaluated Expression Value: " + expressionValue);
+            fileRecord.getData().add(expressionValue);
         }
     }
 
@@ -180,6 +199,9 @@ public class UkubukaTransformer {
      */
     private void doMove(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
+        LOGGER.info("Performing Move Operation - Source: " + source
+                + " | Target: " + target + " | Header: " + fileHeader);
+
         /* Get Source & Target Indices */
         int sourceIndex = fileHeader.indexOf(source);
         int targetIndex = Integer.parseInt(target.replace(
@@ -206,6 +228,9 @@ public class UkubukaTransformer {
      */
     private void doSwap(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
+        LOGGER.info("Performing Swap Operation - Source: " + source
+                + " | Target: " + target + " | Header: " + fileHeader);
+
         /* Get Source & Target Indices */
         int sourceIndex = fileHeader.indexOf(source);
         int targetIndex = fileHeader.indexOf(target);
