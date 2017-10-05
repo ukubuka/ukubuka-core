@@ -1,8 +1,13 @@
 package com.ukubuka.core.execute;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,16 +18,21 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.ukubuka.core.exception.ParserException;
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
+import com.ukubuka.core.model.FileRecord;
+import com.ukubuka.core.model.SupportedFileType;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Extract;
-import com.ukubuka.core.model.UkubukaSchema.Operations;
+import com.ukubuka.core.model.UkubukaSchema.Load;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
+import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
 import com.ukubuka.core.parser.UkubukaParser;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.transform.UkubukaTransformer;
 import com.ukubuka.core.utilities.Constants;
+import com.ukubuka.core.utilities.Utilities;
 import com.ukubuka.core.writer.UkubukaWriter;
 
 /**
@@ -33,11 +43,16 @@ import com.ukubuka.core.writer.UkubukaWriter;
  */
 @Service
 public class UkubukaExecutorService {
-    /**************************** Global Variables ***************************/
+
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaExecutorService.class);
+
+    /*********************************** Global Variables ***********************************/
     private static final ObjectReader SCHEMA_READER = new ObjectMapper()
             .readerFor(UkubukaSchema.class);
 
-    /************************* Dependency Injections *************************/
+    /********************************* Dependency Injections ********************************/
     @Autowired
     private UkubukaReader reader;
 
@@ -61,11 +76,17 @@ public class UkubukaExecutorService {
      * @param ukubukaSchemaFile
      * @throws ParserException
      * @throws TransformException
+     * @throws WriterException
      */
     public void execute(final String ukubukaSchemaFile) throws ParserException,
-            TransformException {
+            TransformException, WriterException {
+        /* Create An In-Memory Data Store */
+        Map<String, FileContents> dataFiles = new HashMap<>();
+
         /* Read File*/
         UkubukaSchema ukubukaSchema = readSchema(ukubukaSchemaFile);
+
+        /* Iterate Extracts */
         for (final Extract extract : ukubukaSchema.getExtracts()) {
             FileContents fileContents = null;
 
@@ -86,17 +107,95 @@ public class UkubukaExecutorService {
                     throw new ParserException("File Type Not Supported!");
             }
 
-            /* Get File Transformation */
-            List<Operations> fileTransforms = getFileTransformationDetails(
-                    extract.getId(), ukubukaSchema.getTransforms());
-            if (!CollectionUtils.isEmpty(fileTransforms)) {
-                ukubukaTransformer.performOperations(fileContents.getHeader(),
-                        fileContents.getData(), fileTransforms);
+            /* Perform Transformations */
+            performTransformation(extract.getId(),
+                    ukubukaSchema.getTransforms(), fileContents);
+
+            /* Store DataSet */
+            dataFiles.put(extract.getId(), fileContents);
+        }
+
+        /* Perform Load */
+        performLoad(ukubukaSchema.getLoads(), dataFiles);
+    }
+
+    /**
+     * Perform Transformations
+     * 
+     * @param fileId
+     * @param transforms
+     * @param fileContents
+     * @throws TransformException
+     */
+    private void performTransformation(final String fileId,
+            final List<Transform> transforms, FileContents fileContents)
+            throws TransformException {
+        /* Get File Transformation */
+        List<TransformOperations> fileTransforms = getFileTransformationDetails(
+                fileId, transforms);
+        if (!CollectionUtils.isEmpty(fileTransforms)) {
+            ukubukaTransformer.performOperations(fileContents.getHeader(),
+                    fileContents.getData(), fileTransforms);
+        }
+    }
+
+    /**
+     * Perform Loads
+     * 
+     * @param load
+     * @param dataFiles
+     * @throws WriterException
+     */
+    private void performLoad(final Load load,
+            final Map<String, FileContents> dataFiles) throws WriterException {
+        /* Check Whether Valid Load Operations */
+        if (null != load) {
+            FileContents fileContents = new FileContents(
+                    new ArrayList<String>(), new ArrayList<FileRecord>());
+            fileContents.setHeader(dataFiles.get(
+                    load.getOperations().getHeader()).getHeader());
+            for (final String fileId : load.getOperations().getData()) {
+                fileContents.getData().addAll(dataFiles.get(fileId).getData());
             }
 
-            /* Write JSON */
-            System.out.println(writer.writeJSON(fileContents.getHeader(),
-                    fileContents.getData()));
+            /* Write File */
+            try {
+                writeFile(load.getType(), load.getLocation(),
+                        fileContents.getHeader(), fileContents.getData());
+            } catch (ParserException | IOException ex) {
+                throw new WriterException(ex);
+            }
+        }
+    }
+
+    /**
+     * Write File
+     * 
+     * @param supportedFileType
+     * @param completeFileName
+     * @param header
+     * @param data
+     * @throws IOException
+     * @throws ParserException
+     */
+    private void writeFile(final SupportedFileType supportedFileType,
+            final String completeFileName, List<String> header,
+            List<FileRecord> data) throws IOException, ParserException {
+        /* Get File Type */
+        switch (supportedFileType) {
+        /* Delimited File */
+            case CSV:
+                Utilities.writeFile(completeFileName,
+                        writer.writeCSV(header, data).toString());
+                break;
+            /* XML File */
+            case JSON:
+                Utilities.writeFile(completeFileName, writer.prettyPrint(writer
+                        .writeJSON(header, data).toString()));
+                break;
+            /* Unsupported File */
+            default:
+                throw new ParserException("File Type Not Supported!");
         }
     }
 
@@ -107,8 +206,8 @@ public class UkubukaExecutorService {
      * @param transforms
      * @return File Transforms
      */
-    private List<Operations> getFileTransformationDetails(final String fileId,
-            List<Transform> transforms) {
+    private List<TransformOperations> getFileTransformationDetails(
+            final String fileId, List<Transform> transforms) {
         /* Iterate Transforms */
         for (final Transform transform : transforms) {
             if (transform.getId().equals(fileId)) {
