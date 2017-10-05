@@ -4,22 +4,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ukubuka.core.exception.TransformException;
 
 /**
- * Transform Operation
+ * Load Operation
  * 
  * @author agrawroh
  * @version v1.0
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum TransformOperation {
+public enum LoadOperation {
 
-    RENAME("rename"), DELETE("delete"), REMOVE("remove"), ADD("add"), NEW("new"), MOVE(
-            "move"), SWAP("swap");
+    JOIN("join");
 
     /* Operation */
     private String operation;
 
     /********** Private Constructor **********/
-    private TransformOperation(final String operation) {
+    private LoadOperation(final String operation) {
         this.operation = operation;
     }
 
@@ -37,10 +36,9 @@ public enum TransformOperation {
      * @return TransformOperation
      * @throws TransformException
      */
-    public static TransformOperation getOperation(final String source)
+    public static LoadOperation getOperation(final String source)
             throws TransformException {
-        for (final TransformOperation transformOperation : TransformOperation
-                .values()) {
+        for (final LoadOperation transformOperation : LoadOperation.values()) {
             if (transformOperation.getOperation().equals(source)) {
                 return transformOperation;
             }
