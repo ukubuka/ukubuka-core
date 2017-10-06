@@ -3,6 +3,7 @@ package com.ukubuka.core.execute;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
+import com.ukubuka.core.model.LoadOperation;
 import com.ukubuka.core.model.SupportedFileType;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.UkubukaSchema;
@@ -162,8 +164,15 @@ public class UkubukaExecutorService {
                     new ArrayList<String>(), new ArrayList<FileRecord>());
             fileContents.setHeader(dataFiles.get(
                     load.getOperations().getHeader()).getHeader());
+
+            /* Iterate Data Sources */
             for (final String fileId : load.getOperations().getData()) {
-                fileContents.getData().addAll(dataFiles.get(fileId).getData());
+                /* Check Flag For DISTINCT */
+                fileContents.getData().addAll(
+                        LoadOperation.DISTINCT == load.getOperations()
+                                .getFilter() ? new HashSet<>(dataFiles.get(
+                                fileId).getData()) : dataFiles.get(fileId)
+                                .getData());
             }
 
             /* Write File */
