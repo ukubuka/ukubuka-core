@@ -12,7 +12,7 @@ import com.ukubuka.core.exception.TransformException;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum LoadOperation {
 
-    JOIN("join");
+    JOIN("join"), DISTINCT("distinct");
 
     /* Operation */
     private String operation;
