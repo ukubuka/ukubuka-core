@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +26,10 @@ import com.ukubuka.core.utilities.Constants;
 @Component
 public class UkubukaReader {
 
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaReader.class);
+
     /**
      * Read File
      * 
@@ -37,6 +43,9 @@ public class UkubukaReader {
     public List<String> readFile(final SupportedSource source,
             final String completeFileName, final String fileEncoding,
             final String endLineDelimiter) throws ReaderException {
+        LOGGER.info("Reading File - Source: " + source + " | Location: "
+                + completeFileName + " | Encoding: " + fileEncoding
+                + " | Delimiter: " + endLineDelimiter);
         return new ArrayList<>(
                 Arrays.asList(readFileAsString(source, completeFileName,
                         fileEncoding)

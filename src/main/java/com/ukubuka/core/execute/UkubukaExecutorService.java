@@ -3,6 +3,7 @@ package com.ukubuka.core.execute;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
+import com.ukubuka.core.model.LoadOperation;
 import com.ukubuka.core.model.SupportedFileType;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.UkubukaSchema;
@@ -87,7 +89,9 @@ public class UkubukaExecutorService {
         UkubukaSchema ukubukaSchema = readSchema(ukubukaSchemaFile);
 
         /* Iterate Extracts */
+        LOGGER.info("Performing Extracts...");
         for (final Extract extract : ukubukaSchema.getExtracts()) {
+            LOGGER.info("Performing Extract: HC" + extract.hashCode());
             FileContents fileContents = null;
 
             /* Get File Type */
@@ -108,6 +112,7 @@ public class UkubukaExecutorService {
             }
 
             /* Perform Transformations */
+            LOGGER.info("Performing Transformations...");
             performTransformation(extract.getId(),
                     ukubukaSchema.getTransforms(), fileContents);
 
@@ -116,6 +121,7 @@ public class UkubukaExecutorService {
         }
 
         /* Perform Load */
+        LOGGER.info("Performing Load...");
         performLoad(ukubukaSchema.getLoads(), dataFiles);
     }
 
@@ -134,6 +140,7 @@ public class UkubukaExecutorService {
         List<TransformOperations> fileTransforms = getFileTransformationDetails(
                 fileId, transforms);
         if (!CollectionUtils.isEmpty(fileTransforms)) {
+            LOGGER.info("Transform Count: #" + fileTransforms.size());
             ukubukaTransformer.performOperations(fileContents.getHeader(),
                     fileContents.getData(), fileTransforms);
         }
@@ -150,16 +157,29 @@ public class UkubukaExecutorService {
             final Map<String, FileContents> dataFiles) throws WriterException {
         /* Check Whether Valid Load Operations */
         if (null != load) {
+            LOGGER.info("Performing Load: HC" + load.hashCode());
+
+            /* Get File Contents */
             FileContents fileContents = new FileContents(
                     new ArrayList<String>(), new ArrayList<FileRecord>());
             fileContents.setHeader(dataFiles.get(
                     load.getOperations().getHeader()).getHeader());
+
+            /* Iterate Data Sources */
             for (final String fileId : load.getOperations().getData()) {
-                fileContents.getData().addAll(dataFiles.get(fileId).getData());
+                /* Check Flag For DISTINCT */
+                fileContents.getData().addAll(
+                        LoadOperation.DISTINCT == load.getOperations()
+                                .getFilter() ? new HashSet<>(dataFiles.get(
+                                fileId).getData()) : dataFiles.get(fileId)
+                                .getData());
             }
 
             /* Write File */
+            LOGGER.info("Writing File...");
             try {
+                LOGGER.info("ID: " + load.getId() + " | Type: "
+                        + load.getType() + " | Location: " + load.getLocation());
                 writeFile(load.getType(), load.getLocation(),
                         fileContents.getHeader(), fileContents.getData());
             } catch (ParserException | IOException ex) {

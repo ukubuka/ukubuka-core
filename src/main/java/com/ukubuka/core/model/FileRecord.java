@@ -2,6 +2,8 @@ package com.ukubuka.core.model;
 
 import java.util.List;
 
+import org.springframework.util.CollectionUtils;
+
 /**
  * File Record
  * 
@@ -35,5 +37,36 @@ public class FileRecord {
      */
     public void setData(List<String> data) {
         this.data = data;
+    }
+
+    /********************************* Override(s) ********************************/
+    @Override
+    public boolean equals(Object object) {
+        if (object == this)
+            return true;
+        if (!(object instanceof FileRecord)) {
+            return false;
+        }
+
+        /* Cast FileRecord */
+        FileRecord fileRecord = (FileRecord) object;
+
+        /* Empty List */
+        if (CollectionUtils.isEmpty(this.getData())
+                || CollectionUtils.isEmpty(fileRecord.getData())) {
+            return false;
+        }
+
+        /* Check Whether Equal */
+        return fileRecord.getData().toString()
+                .equals(this.getData().toString());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + data.hashCode();
+        result = 41 * result + data.size();
+        return result;
     }
 }
