@@ -312,7 +312,7 @@ public class UkubukaSchema {
         private List<String> data;
 
         @JsonProperty("filter")
-        private String filter;
+        private LoadOperation filter;
 
         /**
          * @return the type
@@ -332,7 +332,7 @@ public class UkubukaSchema {
         /**
          * @return the filter
          */
-        public String getFilter() {
+        public LoadOperation getFilter() {
             return filter;
         }
 
@@ -340,7 +340,7 @@ public class UkubukaSchema {
          * @param filter
          *            the filter to set
          */
-        public void setFilter(String filter) {
+        public void setFilter(LoadOperation filter) {
             this.filter = filter;
         }
 
