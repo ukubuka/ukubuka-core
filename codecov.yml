@@ -1,4 +1,0 @@
-coverage:
-  ignore:
-     - "com/ukubuka/core/model/.*"      # Ignore Models
-     - "com/ukubuka/core/exception/.*"  # Ignore Exceptions
