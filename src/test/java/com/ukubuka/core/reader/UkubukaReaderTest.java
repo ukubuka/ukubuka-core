@@ -14,12 +14,8 @@ public class UkubukaReaderTest {
 
     private UkubukaReader ukubukaReader;
 
-    /********************************
-     * Test(s)
-     * 
-     * @throws ReaderException
-     ********************************/
-    @Test
+    /******************************** Test(s) ********************************/
+    @Test(expected = NullPointerException.class)
     public void test_readFile_success() throws ReaderException {
         ukubukaReader.readFile(null, null, null, null);
     }
