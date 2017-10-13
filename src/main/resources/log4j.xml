@@ -14,7 +14,7 @@
 		<appender-ref ref="console" />
 	</logger>
 
-	<logger name="com.agrawroh.selemize" additivity="false">
+	<logger name="com.ukubuka.core" additivity="false">
 		<level value="info" />
 		<appender-ref ref="console" />
 	</logger>

@@ -1,5 +1,7 @@
 package com.ukubuka.core.evaluator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -16,7 +18,11 @@ import com.ukubuka.core.model.FileRecord;
 @Component
 public class UkubukaExpressionEvaluator {
 
-    /************************* Dependency Injections *************************/
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaExpressionEvaluator.class);
+
+    /********************************* Dependency Injections ********************************/
     @Autowired
     private ExpressionParser expressionParser;
 
@@ -25,9 +31,10 @@ public class UkubukaExpressionEvaluator {
      * 
      * @return Evaluated Expression
      */
-    public Object evaluate(final FileRecord fileRecord, final String expression) {
-        return expressionParser.parseExpression(
-                expression.substring(1, expression.length() - 1)).getValue(
-                new StandardEvaluationContext(fileRecord));
+    public Object evaluate(final FileRecord fileRecord,
+            final String expression) {
+        LOGGER.info("Evaluating Expression: " + expression);
+        return expressionParser.parseExpression(expression)
+                .getValue(new StandardEvaluationContext(fileRecord));
     }
 }
