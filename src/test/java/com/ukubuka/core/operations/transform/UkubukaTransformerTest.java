@@ -1,4 +1,4 @@
-package com.ukubuka.core.transform;
+package com.ukubuka.core.operations.transform;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -1,4 +1,4 @@
-package com.ukubuka.core.transform;
+package com.ukubuka.core.operations.transform;
 
 import java.util.Collections;
 import java.util.List;
