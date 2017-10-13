@@ -2,6 +2,7 @@ package com.ukubuka.core.reader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,10 +47,10 @@ public class UkubukaReader {
         LOGGER.info("Reading File - Source: " + source + " | Location: "
                 + completeFileName + " | Encoding: " + fileEncoding
                 + " | Delimiter: " + endLineDelimiter);
-        return new ArrayList<>(
-                Arrays.asList(readFileAsString(source, completeFileName,
-                        fileEncoding)
-                        .split(StringUtils.isEmpty(endLineDelimiter) ? Constants.DEFAULT_FILE_END_LINE_DELIMITER
+        return new ArrayList<>(Arrays
+                .asList(readFileAsString(source, completeFileName, fileEncoding)
+                        .split(StringUtils.isEmpty(endLineDelimiter)
+                                ? Constants.DEFAULT_FILE_END_LINE_DELIMITER
                                 : endLineDelimiter)));
     }
 
@@ -68,12 +69,15 @@ public class UkubukaReader {
         try {
             return FileUtils
                     .readFileToString(
-                            source == SupportedSource.URL ? FileUtils
-                                    .toFile(new URL(completeFileName))
+                            source == SupportedSource.URL
+                                    ? new File(
+                                            new URL(completeFileName).toURI())
                                     : new File(completeFileName),
-                            StringUtils.isEmpty(fileEncoding) ? Constants.DEFAULT_FILE_ENCODING
+                            StringUtils.isEmpty(fileEncoding)
+                                    ? Constants.DEFAULT_FILE_ENCODING
                                     : fileEncoding);
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException
+                | IllegalArgumentException ex) {
             throw new ReaderException(ex);
         }
     }

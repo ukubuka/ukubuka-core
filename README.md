@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/ukubuka/ukubuka-core.svg?branch=master)](https://travis-ci.org/ukubuka/ukubuka-core)
+[![Coverage Status](https://codecov.io/gh/ukubuka/ukubuka-core/branch/master/graph/badge.svg)](https://codecov.io/gh/ukubuka/ukubuka-core)
+[![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+<a href="https://github.com/ukubuka/core">
+<img align="right" height="90px" src="https://raw.githubusercontent.com/ukubuka/core/master/wiki/logo.png">
+</a>
+
 Ukubuka is a lightweight library written in Java which is capable of powerful ETL and data visualizations.
 
 ### Description
