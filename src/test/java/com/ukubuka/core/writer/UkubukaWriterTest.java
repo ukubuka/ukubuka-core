@@ -94,4 +94,13 @@ public class UkubukaWriterTest {
         JSONArray jsonArray = ukubukaWriter.writeJSON(fileHeader, fileRecords);
         assertEquals(1, jsonArray.length());
     }
+
+    @Test
+    public void test_writeCSV_success() {
+        List<String> fileHeader = Arrays.asList("foo", "bar");
+        List<FileRecord> fileRecords = Arrays.asList(new FileRecord(Arrays
+                .asList("bar", "foo")));
+        String csvFile = ukubukaWriter.writeCSV(fileHeader, fileRecords);
+        assertEquals(16, csvFile.length());
+    }
 }
