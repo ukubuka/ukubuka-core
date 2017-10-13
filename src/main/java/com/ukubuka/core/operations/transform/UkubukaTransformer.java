@@ -1,4 +1,4 @@
-package com.ukubuka.core.transform;
+package com.ukubuka.core.operations.transform;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,24 +42,22 @@ public class UkubukaTransformer {
      */
     public void performOperations(List<String> fileHeader,
             List<FileRecord> fileRecords,
-            List<TransformOperations> operationsList) throws TransformException {
+            List<TransformOperations> operationsList)
+            throws TransformException {
         /* Iterate Operations */
         for (final TransformOperations operation : operationsList) {
             LOGGER.info("Performing Transform: HC" + operation.hashCode());
 
             /* Get Source & Target Values */
-            String source = fileHeader.get(0).indexOf(
-                    Constants.COLUMN_ENCOLSING_QUOTE) >= 0 ? Constants.COLUMN_ENCOLSING_QUOTE
-                    + operation.getSource() + Constants.COLUMN_ENCOLSING_QUOTE
-                    : operation.getSource();
-            String target = Constants.COLUMN_ENCOLSING_QUOTE
-                    + operation.getTarget() + Constants.COLUMN_ENCOLSING_QUOTE;
+            String source = operation.getSource();
+            String target = operation.getTarget();
 
             /* Check Whether Column Exists */
             if (operation.getType() != TransformOperation.ADD
+                    && operation.getType() != TransformOperation.NEW
                     && !fileHeader.contains(source)) {
-                throw new TransformException("Column Not Found! Name: "
-                        + source + " | Header: " + fileHeader);
+                throw new TransformException("Column Not Found! Name: " + source
+                        + " | Header: " + fileHeader);
             }
 
             /* Perform Operation */
@@ -84,43 +82,39 @@ public class UkubukaTransformer {
             final String target) throws TransformException {
         switch (operationType) {
         /* Column Rename Operation */
-            case RENAME:
-                doRename(fileHeader, source, target);
-                break;
+        case RENAME:
+            doRename(fileHeader, source, target);
+            break;
 
-            /* Column Delete Operation */
-            case DELETE:
-                doDelete(fileHeader, fileRecords, source);
-                break;
+        /* Column Delete Operation */
+        case DELETE:
+            doDelete(fileHeader, fileRecords, source);
+            break;
 
-            /* Column Delete Operation */
-            case REMOVE:
-                doDelete(fileHeader, fileRecords, source);
-                break;
+        /* Column Delete Operation */
+        case REMOVE:
+            doDelete(fileHeader, fileRecords, source);
+            break;
 
-            /* Column Add Operation */
-            case ADD:
-                doAdd(fileHeader, fileRecords, source, target);
-                break;
+        /* Column Add Operation */
+        case ADD:
+            doAdd(fileHeader, fileRecords, source, target);
+            break;
 
-            /* Column Add Operation */
-            case NEW:
-                doAdd(fileHeader, fileRecords, source, target);
-                break;
+        /* Column Add Operation */
+        case NEW:
+            doAdd(fileHeader, fileRecords, source, target);
+            break;
 
-            /* Column Move Operation */
-            case MOVE:
-                doMove(fileHeader, fileRecords, source, target);
-                break;
+        /* Column Move Operation */
+        case MOVE:
+            doMove(fileHeader, fileRecords, source, target);
+            break;
 
-            /* Column Swap Operation */
-            case SWAP:
-                doSwap(fileHeader, fileRecords, source, target);
-                break;
-
-            /* Unsupported Operation */
-            default:
-                throw new TransformException("Operation Not Supported!");
+        /* Column Swap Operation */
+        case SWAP:
+            doSwap(fileHeader, fileRecords, source, target);
+            break;
         }
     }
 
@@ -147,8 +141,8 @@ public class UkubukaTransformer {
      * @param source
      * @param rowData
      */
-    private void doDelete(List<String> fileHeader,
-            List<FileRecord> fileRecords, final String source) {
+    private void doDelete(List<String> fileHeader, List<FileRecord> fileRecords,
+            final String source) {
         LOGGER.info("Performing Delete Operation - Source: " + source
                 + " | Header: " + fileHeader);
 
@@ -182,8 +176,8 @@ public class UkubukaTransformer {
 
         /* Add New Column Values */
         for (final FileRecord fileRecord : fileRecords) {
-            String expressionValue = String.valueOf(expressionEvaluator
-                    .evaluate(fileRecord, target));
+            String expressionValue = String
+                    .valueOf(expressionEvaluator.evaluate(fileRecord, target));
             LOGGER.info("Evaluated Expression Value: " + expressionValue);
             fileRecord.getData().add(expressionValue);
         }

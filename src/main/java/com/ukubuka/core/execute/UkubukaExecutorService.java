@@ -30,9 +30,9 @@ import com.ukubuka.core.model.UkubukaSchema.Extract;
 import com.ukubuka.core.model.UkubukaSchema.Load;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
+import com.ukubuka.core.operations.transform.UkubukaTransformer;
 import com.ukubuka.core.parser.UkubukaParser;
 import com.ukubuka.core.reader.UkubukaReader;
-import com.ukubuka.core.transform.UkubukaTransformer;
 import com.ukubuka.core.utilities.Constants;
 import com.ukubuka.core.utilities.Utilities;
 import com.ukubuka.core.writer.UkubukaWriter;
@@ -80,8 +80,8 @@ public class UkubukaExecutorService {
      * @throws TransformException
      * @throws WriterException
      */
-    public void execute(final String ukubukaSchemaFile) throws ParserException,
-            TransformException, WriterException {
+    public void execute(final String ukubukaSchemaFile)
+            throws ParserException, TransformException, WriterException {
         /* Create An In-Memory Data Store */
         Map<String, FileContents> dataFiles = new HashMap<>();
 
@@ -97,18 +97,18 @@ public class UkubukaExecutorService {
             /* Get File Type */
             switch (extract.getType()) {
             /* Delimited File */
-                case CSV:
-                    fileContents = delimitedFileParser.parseFile(
-                            extract.getLocation(), extract.getFlags());
-                    break;
-                /* XML File */
-                case XML:
-                    fileContents = xmlParser.parseFile(extract.getLocation(),
-                            extract.getFlags());
-                    break;
-                /* Unsupported File */
-                default:
-                    throw new ParserException("File Type Not Supported!");
+            case CSV:
+                fileContents = delimitedFileParser
+                        .parseFile(extract.getLocation(), extract.getFlags());
+                break;
+            /* XML File */
+            case XML:
+                fileContents = xmlParser.parseFile(extract.getLocation(),
+                        extract.getFlags());
+                break;
+            /* Unsupported File */
+            default:
+                throw new ParserException("File Type Not Supported!");
             }
 
             /* Perform Transformations */
@@ -162,24 +162,25 @@ public class UkubukaExecutorService {
             /* Get File Contents */
             FileContents fileContents = new FileContents(
                     new ArrayList<String>(), new ArrayList<FileRecord>());
-            fileContents.setHeader(dataFiles.get(
-                    load.getOperations().getHeader()).getHeader());
+            fileContents.setHeader(dataFiles
+                    .get(load.getOperations().getHeader()).getHeader());
 
             /* Iterate Data Sources */
             for (final String fileId : load.getOperations().getData()) {
                 /* Check Flag For DISTINCT */
-                fileContents.getData().addAll(
-                        LoadOperation.DISTINCT == load.getOperations()
-                                .getFilter() ? new HashSet<>(dataFiles.get(
-                                fileId).getData()) : dataFiles.get(fileId)
-                                .getData());
+                fileContents.getData()
+                        .addAll(LoadOperation.DISTINCT == load.getOperations()
+                                .getFilter()
+                                        ? new HashSet<>(
+                                                dataFiles.get(fileId).getData())
+                                        : dataFiles.get(fileId).getData());
             }
 
             /* Write File */
             LOGGER.info("Writing File...");
             try {
-                LOGGER.info("ID: " + load.getId() + " | Type: "
-                        + load.getType() + " | Location: " + load.getLocation());
+                LOGGER.info("ID: " + load.getId() + " | Type: " + load.getType()
+                        + " | Location: " + load.getLocation());
                 writeFile(load.getType(), load.getLocation(),
                         fileContents.getHeader(), fileContents.getData());
             } catch (ParserException | IOException ex) {
@@ -204,18 +205,18 @@ public class UkubukaExecutorService {
         /* Get File Type */
         switch (supportedFileType) {
         /* Delimited File */
-            case CSV:
-                Utilities.writeFile(completeFileName,
-                        writer.writeCSV(header, data).toString());
-                break;
-            /* XML File */
-            case JSON:
-                Utilities.writeFile(completeFileName, writer.prettyPrint(writer
-                        .writeJSON(header, data).toString()));
-                break;
-            /* Unsupported File */
-            default:
-                throw new ParserException("File Type Not Supported!");
+        case CSV:
+            Utilities.writeFile(completeFileName,
+                    writer.writeCSV(header, data).toString());
+            break;
+        /* XML File */
+        case JSON:
+            Utilities.writeFile(completeFileName, writer
+                    .prettyPrint(writer.writeJSON(header, data).toString()));
+            break;
+        /* Unsupported File */
+        default:
+            throw new ParserException("File Type Not Supported!");
         }
     }
 
