@@ -36,12 +36,6 @@ public class UkubukaTransformerTest {
     @InjectMocks
     private UkubukaTransformer ukubukaTransformer;
 
-    /*************************** Global Declarations **************************/
-    public static final List<String> FILE_HEADER = Arrays.asList("foo", "bar");
-    public static final List<FileRecord> FILE_RECORDS = Arrays.asList(
-            new FileRecord(Arrays.asList("bar", "foo")),
-            new FileRecord(Arrays.asList("foo", "bar")));
-
     /**************************** Initialize Mocks ***************************/
     @Before
     public void init() {
@@ -80,7 +74,7 @@ public class UkubukaTransformerTest {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.NEW);
         transformOperation.setSource("foobar");
-        transformOperation.setTarget("new java.util.Random().nextInt(100)");
+        transformOperation.setTarget("new String('barfoo')");
 
         List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
         List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
