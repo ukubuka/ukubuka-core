@@ -55,21 +55,25 @@ public class UkubukaTransformer {
     @PostConstruct
     public void initShortcutMap() throws ReaderException {
         /* Get Mappings File */
-        String[] fileContents = this.reader
-                .readFileAsString(SupportedSource.FILE,
-                        this.getClass().getClassLoader()
-                                .getResource("shortcut-mappings").getFile(),
-                        Constants.DEFAULT_FILE_ENCODING)
-                .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+        String[] fileContents;
+        try {
+            fileContents = this.reader
+                    .readFileAsString(SupportedSource.FILE,
+                            this.getClass().getClassLoader()
+                                    .getResource("shortcut-mappings").getFile(),
+                            Constants.DEFAULT_FILE_ENCODING)
+                    .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+        } catch (Exception ex) {
+            LOGGER.error("Unable To Read Shortcut Mappings!", ex);
+            throw new ReaderException("Unable To Read Shortcut Mappings!");
+        }
 
         /* Create Shortcuts Map */
-        if (fileContents.length > 0) {
-            sMap = new HashMap<>();
-            for (final String fileContent : fileContents) {
-                String[] keyValuePair = fileContent
-                        .split(Constants.SHORTCUT_MAP_DELIMITER);
-                sMap.put(keyValuePair[0], keyValuePair[1]);
-            }
+        sMap = new HashMap<>();
+        for (final String fileContent : fileContents) {
+            String[] keyValuePair = fileContent
+                    .split(Constants.SHORTCUT_MAP_DELIMITER);
+            sMap.put(keyValuePair[0], keyValuePair[1]);
         }
     }
 
@@ -263,7 +267,8 @@ public class UkubukaTransformer {
         /* Add New Column Values */
         for (final FileRecord fileRecord : fileRecords) {
             String expressionValue = String.valueOf(expressionEvaluator
-                    .evaluate(fileRecord, getOriginalTarget(target)));
+                    .evaluate(fileRecord, CollectionUtils.isEmpty(sMap) ? target
+                            : getOriginalTarget(target)));
             LOGGER.info("Evaluated Expression Value: " + expressionValue);
             fileRecord.getData().add(expressionValue);
         }
