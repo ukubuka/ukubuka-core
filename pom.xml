@@ -152,6 +152,9 @@
 						<excludes>
 							<exclude>**/com/ukubuka/core/model/</exclude>
 							<exclude>**/com/ukubuka/core/exception/</exclude>
+							<exclude>**/com/ukubuka/core/utilities/Constants.java</exclude>
+							<exclude>**/com/ukubuka/core/utilities/Utilities.java</exclude>
+							<exclude>**/com/ukubuka/core/launcher/UkubukaLauncher.java</exclude>
 						</excludes>
 					</configuration>
 					<executions>
