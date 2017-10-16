@@ -71,8 +71,6 @@ public final class Utilities {
             String dataRow = fileContents.get(i);
             List<Integer> indices = extractDelimiterIndices(dataRow,
                     oldDelimiter.charAt(0));
-            System.out.println(oldDelimiter.charAt(0));
-            System.out.println(indices);
             StringBuilder builder = new StringBuilder()
                     .append(dataRow.charAt(0));
             int prev_index = 0;

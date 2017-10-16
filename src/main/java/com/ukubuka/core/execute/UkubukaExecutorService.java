@@ -121,8 +121,10 @@ public class UkubukaExecutorService {
         }
 
         /* Perform Load */
-        LOGGER.info("Performing Load...");
-        performLoad(ukubukaSchema.getLoads(), dataFiles);
+        LOGGER.info("Performing Loads...");
+        for (final Load load : ukubukaSchema.getLoads()) {
+            performLoad(load, dataFiles);
+        }
     }
 
     /**
