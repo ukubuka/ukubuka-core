@@ -11,13 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
+import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
@@ -27,6 +30,9 @@ import com.ukubuka.core.utilities.Constants;
  * 
  * @author yashvardhannanavati
  * @version v1.0
+ * 
+ * @author agrawroh
+ * @version v1.1
  */
 @Component
 public class UkubukaTransformer {
@@ -68,6 +74,49 @@ public class UkubukaTransformer {
     }
 
     /**
+     * Perform Transformations
+     * 
+     * @param fileId
+     * @param transforms
+     * @param fileContents
+     * @return 
+     * @throws TransformException
+     */
+    public Map<String, FileContents> performOperations(
+            Map<String, FileContents> dataFiles,
+            final List<Transform> transforms) throws TransformException {
+        /* Get File Transformation */
+        for (final String key : dataFiles.keySet()) {
+            List<TransformOperations> fileTransforms = getFileTransformationDetails(
+                    key, transforms);
+            if (!CollectionUtils.isEmpty(fileTransforms)) {
+                LOGGER.info("Transform Count: #" + fileTransforms.size());
+                performTransformOperations(dataFiles.get(key).getHeader(),
+                        dataFiles.get(key).getData(), fileTransforms);
+            }
+        }
+        return dataFiles;
+    }
+
+    /**
+     * Get File Transformation Details
+     * 
+     * @param fileId
+     * @param transforms
+     * @return File Transforms
+     */
+    private List<TransformOperations> getFileTransformationDetails(
+            final String fileId, List<Transform> transforms) {
+        /* Iterate Transforms */
+        for (final Transform transform : transforms) {
+            if (transform.getId().equals(fileId)) {
+                return transform.getOperations();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Perform Operations
      * 
      * @param fileHeader
@@ -75,7 +124,7 @@ public class UkubukaTransformer {
      * @param fileRecords
      * @throws TransformException
      */
-    public void performOperations(List<String> fileHeader,
+    private void performTransformOperations(List<String> fileHeader,
             List<FileRecord> fileRecords,
             List<TransformOperations> operationsList)
             throws TransformException {
@@ -93,8 +142,8 @@ public class UkubukaTransformer {
             }
 
             /* Perform Operation */
-            performOperation(fileHeader, fileRecords, operation.getType(),
-                    source, operation.getTarget());
+            performTransformOperation(fileHeader, fileRecords,
+                    operation.getType(), source, operation.getTarget());
         }
     }
 
@@ -108,7 +157,7 @@ public class UkubukaTransformer {
      * @param fileRecords
      * @throws TransformException
      */
-    private void performOperation(List<String> fileHeader,
+    private void performTransformOperation(List<String> fileHeader,
             List<FileRecord> fileRecords,
             final TransformOperation operationType, final String source,
             final String target) throws TransformException {
