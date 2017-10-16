@@ -12,8 +12,8 @@ import com.ukubuka.core.exception.TransformException;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum TransformOperation {
 
-    RENAME("rename"), DELETE("delete"), REMOVE("remove"), ADD("add"), NEW("new"), MOVE(
-            "move"), SWAP("swap");
+    RENAME("rename"), DELETE("delete"), REMOVE("remove"), ADD("add"), NEW(
+            "new"), MOVE("move"), SWAP("swap"), NONE("no-operation");
 
     /* Operation */
     private String operation;

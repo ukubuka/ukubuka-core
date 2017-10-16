@@ -299,12 +299,31 @@ public class UkubukaTransformerTest {
                 operationsList);
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = NullPointerException.class)
     public void test_performOperations_invalid_operation()
             throws TransformException {
         TransformOperations transformOperation = new TransformOperations();
-        transformOperation.setSource("foobar");
+        transformOperation.setSource("foo");
         transformOperation.setTarget("0");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(Arrays.asList("bar", "foo"))),
+                new FileRecord(new ArrayList<>(Arrays.asList("foo", "bar")))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        ukubukaTransformer.performOperations(fileHeader, fileRecords,
+                operationsList);
+    }
+
+    @Test(expected = TransformException.class)
+    public void test_performOperations_unsupported_operation()
+            throws TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.NONE);
+        transformOperation.setSource("foo");
+        transformOperation.setTarget("new java.util.Random(100).nextInt(50)");
 
         List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
         List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(

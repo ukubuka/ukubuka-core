@@ -43,18 +43,43 @@ public class UkubukaBaseParser {
                 .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
 
         /* Set Header */
-        fileContents.setHeader(new ArrayList<>(Arrays.asList(fileLines[0]
-                .split(Constants.DEFAULT_FILE_DELIMITER))));
+        fileContents.setHeader(new ArrayList<>(Arrays
+                .asList(fileLines[0].split(Constants.DEFAULT_FILE_DELIMITER))));
 
         /* Set Data */
         List<FileRecord> fileData = new ArrayList<>();
         for (int i = 1; i < fileLines.length; i++) {
-            fileData.add(new FileRecord(new ArrayList<>(Arrays
-                    .asList(fileLines[i]
+            fileData.add(new FileRecord(new ArrayList<>(Arrays.asList(
+                    fileLines[i].split(Constants.DEFAULT_FILE_DELIMITER)))));
+        }
+        fileContents.setData(fileData);
+
+        return fileContents;
+    }
+
+    /**
+     * Get File Contents
+     * 
+     * @param fileContent
+     * @return File Contents
+     */
+    public FileContents getFileContents(final List<String> fileContent) {
+        FileContents fileContents = new FileContents();
+
+        /* Set Header */
+        fileContents.setHeader(new ArrayList<>(Arrays.asList(fileContent
+                .remove(0).split(Constants.DEFAULT_FILE_DELIMITER))));
+
+        /* Set Data */
+        List<FileRecord> fileData = new ArrayList<>();
+        while (fileContent.size() > 0) {
+            fileData.add(new FileRecord(
+                    new ArrayList<>(Arrays.asList(fileContent.remove(0)
                             .split(Constants.DEFAULT_FILE_DELIMITER)))));
         }
         fileContents.setData(fileData);
 
+        /* Return File Contents */
         return fileContents;
     }
 
@@ -64,22 +89,19 @@ public class UkubukaBaseParser {
      * @param fileContents
      * @return File Contents With Glued Header
      */
-    public String appendHeader(final String fileContents) {
+    public List<String> appendHeader(List<String> fileContents) {
         LOGGER.info("Start Appending Header...");
 
         /* Get Column Size */
-        String singleLine = fileContents
-                .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER)[0];
+        String singleLine = fileContents.get(0);
         int columnSize = singleLine.length()
-                - singleLine.replaceAll(
-                        Constants.DELIMITER_REPLACE_REGEX_START
-                                + Constants.DEFAULT_FILE_DELIMITER
-                                + Constants.DELIMITER_REPLACE_REGEX_END,
+                - singleLine.replaceAll(Constants.DEFAULT_FILE_DELIMITER,
                         Constants.EMPTY_STRING).length();
         LOGGER.info("Column Count: #" + columnSize);
 
-        return new StringBuilder().append(stitchHeader(1 + columnSize))
-                .append(fileContents).toString();
+        /* Stitch Header */
+        fileContents.add(0, stitchHeader(1 + columnSize));
+        return fileContents;
     }
 
     /**
@@ -99,6 +121,7 @@ public class UkubukaBaseParser {
                     .append(Constants.DEFAULT_FILE_DELIMITER);
         }
 
+        /* Return Stitched Output */
         return new StringBuilder()
                 .append(builder.substring(0, builder.length() - 1))
                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER).toString();

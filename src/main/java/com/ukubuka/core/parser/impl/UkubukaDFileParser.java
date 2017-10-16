@@ -1,5 +1,8 @@
 package com.ukubuka.core.parser.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.parser.UkubukaBaseParser;
 import com.ukubuka.core.parser.UkubukaParser;
 import com.ukubuka.core.utilities.Constants;
+import com.ukubuka.core.utilities.Utilities;
 
 /**
  * Ukubuka Delimited File Parser
@@ -23,8 +27,8 @@ import com.ukubuka.core.utilities.Constants;
  * @version v1.0
  */
 @Component("UkubukaDFileParser")
-public class UkubukaDFileParser extends UkubukaBaseParser implements
-        UkubukaParser {
+public class UkubukaDFileParser extends UkubukaBaseParser
+        implements UkubukaParser {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
@@ -56,15 +60,18 @@ public class UkubukaDFileParser extends UkubukaBaseParser implements
      * @return File Content
      * @throws ParserException
      */
-    public String readWithOptions(final String completeFileName,
+    public List<String> readWithOptions(final String completeFileName,
             Map<String, Object> flags) throws ParserException {
         boolean withHeader = null != flags
-                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) ? (boolean) flags
-                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag()) : true;
-        SupportedSource source = null == flags.get(ExtractFlags.SOURCE
-                .getFlag()) ? SupportedSource.FILE : SupportedSource
-                .getSource((String) flags.get(ExtractFlags.SOURCE.getFlag()));
-        String fileContents = readWithOptions(source, completeFileName,
+                .get(ExtractFlags.FILE_CONTAINS_HEADER.getFlag())
+                        ? (boolean) flags.get(
+                                ExtractFlags.FILE_CONTAINS_HEADER.getFlag())
+                        : true;
+        SupportedSource source = null == flags
+                .get(ExtractFlags.SOURCE.getFlag()) ? SupportedSource.FILE
+                        : SupportedSource.getSource((String) flags
+                                .get(ExtractFlags.SOURCE.getFlag()));
+        List<String> fileContents = readWithOptions(source, completeFileName,
                 (String) flags.get(ExtractFlags.FILE_ENCODING.getFlag()),
                 (String) flags.get(ExtractFlags.FILE_DELIMITER.getFlag()));
         return withHeader ? fileContents : super.appendHeader(fileContents);
@@ -79,20 +86,21 @@ public class UkubukaDFileParser extends UkubukaBaseParser implements
      * @return File Content
      * @throws ParserException
      */
-    private String readWithOptions(final SupportedSource source,
+    private List<String> readWithOptions(final SupportedSource source,
             final String completeFileName, final String fileEncoding,
             final String fileDelimiter) throws ParserException {
         try {
-            return StringUtils.isEmpty(fileDelimiter) ? super.getReader()
+            String[] fileContents = super.getReader()
                     .readFileAsString(source, completeFileName, fileEncoding)
-                    : super.getReader()
-                            .readFileAsString(source, completeFileName,
-                                    fileEncoding)
-                            .replaceAll(
-                                    Constants.DELIMITER_REPLACE_REGEX_START
-                                            + fileDelimiter
-                                            + Constants.DELIMITER_REPLACE_REGEX_END,
-                                    Constants.DEFAULT_FILE_DELIMITER);
+                    .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+            List<String> fileLines = new ArrayList<>(
+                    Arrays.asList(fileContents));
+            Utilities.applyNewDelimiter(fileLines,
+                    StringUtils.isEmpty(fileDelimiter)
+                            ? Constants.COMMON_FILE_DELIMITER
+                            : fileDelimiter,
+                    Constants.DEFAULT_FILE_DELIMITER);
+            return fileLines;
         } catch (ReaderException ex) {
             throw new ParserException(ex);
         }

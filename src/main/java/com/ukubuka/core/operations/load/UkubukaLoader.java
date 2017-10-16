@@ -1,4 +1,4 @@
-package com.ukubuka.core.operations.transform;
+package com.ukubuka.core.operations.load;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,17 +16,17 @@ import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
 import com.ukubuka.core.utilities.Constants;
 
 /**
- * Ukubuka Transformer
+ * Ukubuka Loader
  * 
- * @author yashvardhannanavati
+ * @author agrawroh
  * @version v1.0
  */
 @Component
-public class UkubukaTransformer {
+public class UkubukaLoader {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UkubukaTransformer.class);
+            .getLogger(UkubukaLoader.class);
 
     /******************************** Dependency Injections *********************************/
     @Autowired
@@ -48,8 +48,11 @@ public class UkubukaTransformer {
         for (final TransformOperations operation : operationsList) {
             LOGGER.info("Performing Transform: HC" + operation.hashCode());
 
-            /* Check Whether Column Exists */
+            /* Get Source & Target Values */
             String source = operation.getSource();
+            String target = operation.getTarget();
+
+            /* Check Whether Column Exists */
             if (operation.getType() != TransformOperation.ADD
                     && operation.getType() != TransformOperation.NEW
                     && !fileHeader.contains(source)) {
@@ -59,7 +62,7 @@ public class UkubukaTransformer {
 
             /* Perform Operation */
             performOperation(fileHeader, fileRecords, operation.getType(),
-                    source, operation.getTarget());
+                    source, target);
         }
     }
 

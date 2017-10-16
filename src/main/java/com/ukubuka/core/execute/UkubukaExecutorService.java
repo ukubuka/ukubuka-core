@@ -183,7 +183,7 @@ public class UkubukaExecutorService {
                         + " | Location: " + load.getLocation());
                 writeFile(load.getType(), load.getLocation(),
                         fileContents.getHeader(), fileContents.getData());
-            } catch (ParserException | IOException ex) {
+            } catch (ParserException ex) {
                 throw new WriterException(ex);
             }
         }
@@ -196,12 +196,12 @@ public class UkubukaExecutorService {
      * @param completeFileName
      * @param header
      * @param data
-     * @throws IOException
      * @throws ParserException
+     * @throws WriterException 
      */
     private void writeFile(final SupportedFileType supportedFileType,
             final String completeFileName, List<String> header,
-            List<FileRecord> data) throws IOException, ParserException {
+            List<FileRecord> data) throws ParserException, WriterException {
         /* Get File Type */
         switch (supportedFileType) {
         /* Delimited File */
