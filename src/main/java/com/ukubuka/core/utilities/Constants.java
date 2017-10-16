@@ -20,4 +20,5 @@ public final class Constants {
 
     /******************************* Transformer Constants ********************************/
     public static final String COLUMN_ENCOLSING_QUOTE = "\"";
+    public static final String SHORTCUT_MAP_DELIMITER = "=";
 }
