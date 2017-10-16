@@ -265,7 +265,9 @@ public class UkubukaTransformer {
         fileHeader.add(source);
 
         /* Add New Column Values */
-        for (final FileRecord fileRecord : fileRecords) {
+        for (int index = 0; index < fileRecords.size(); index++) {
+            FileRecord fileRecord = fileRecords.get(index);
+            fileRecord.setIndex(index);
             String expressionValue = String.valueOf(expressionEvaluator
                     .evaluate(fileRecord, CollectionUtils.isEmpty(sMap) ? target
                             : getOriginalTarget(target)));

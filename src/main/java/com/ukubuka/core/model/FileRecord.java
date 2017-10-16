@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
  */
 public class FileRecord {
 
+    private int index;
     private List<String> data;
 
     /***************************** Default Constructor ****************************/
@@ -37,6 +38,20 @@ public class FileRecord {
      */
     public void setData(List<String> data) {
         this.data = data;
+    }
+
+    /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     /********************************* Override(s) ********************************/
