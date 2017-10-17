@@ -1,18 +1,28 @@
 package com.ukubuka.core.operations.transform;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
+import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
+import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
+import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
+import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
 /**
@@ -20,6 +30,9 @@ import com.ukubuka.core.utilities.Constants;
  * 
  * @author yashvardhannanavati
  * @version v1.0
+ * 
+ * @author agrawroh
+ * @version v1.1
  */
 @Component
 public class UkubukaTransformer {
@@ -28,9 +41,84 @@ public class UkubukaTransformer {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UkubukaTransformer.class);
 
+    /************************************ Global Variables **********************************/
+    private Map<String, String> sMap;
+
     /******************************** Dependency Injections *********************************/
     @Autowired
     private UkubukaExpressionEvaluator expressionEvaluator;
+
+    @Autowired
+    private UkubukaReader reader;
+
+    /*********************************** Post Construct *************************************/
+    @PostConstruct
+    public void initShortcutMap() throws ReaderException {
+        /* Get Mappings File */
+        String[] fileContents;
+        try {
+            fileContents = this.reader
+                    .readFileAsString(SupportedSource.FILE,
+                            this.getClass().getClassLoader()
+                                    .getResource("shortcut-mappings").getFile(),
+                            Constants.DEFAULT_FILE_ENCODING)
+                    .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+        } catch (Exception ex) {
+            LOGGER.error("Unable To Read Shortcut Mappings!", ex);
+            throw new ReaderException("Unable To Read Shortcut Mappings!");
+        }
+
+        /* Create Shortcuts Map */
+        sMap = new HashMap<>();
+        for (final String fileContent : fileContents) {
+            String[] keyValuePair = fileContent
+                    .split(Constants.SHORTCUT_MAP_DELIMITER);
+            sMap.put(keyValuePair[0], keyValuePair[1]);
+        }
+    }
+
+    /**
+     * Perform Transformations
+     * 
+     * @param fileId
+     * @param transforms
+     * @param fileContents
+     * @return 
+     * @throws TransformException
+     */
+    public Map<String, FileContents> performOperations(
+            Map<String, FileContents> dataFiles,
+            final List<Transform> transforms) throws TransformException {
+        /* Get File Transformation */
+        for (final String key : dataFiles.keySet()) {
+            List<TransformOperations> fileTransforms = getFileTransformationDetails(
+                    key, transforms);
+            if (!CollectionUtils.isEmpty(fileTransforms)) {
+                LOGGER.info("Transform Count: #" + fileTransforms.size());
+                performTransformOperations(dataFiles.get(key).getHeader(),
+                        dataFiles.get(key).getData(), fileTransforms);
+            }
+        }
+        return dataFiles;
+    }
+
+    /**
+     * Get File Transformation Details
+     * 
+     * @param fileId
+     * @param transforms
+     * @return File Transforms
+     */
+    private List<TransformOperations> getFileTransformationDetails(
+            final String fileId, List<Transform> transforms) {
+        /* Iterate Transforms */
+        for (final Transform transform : transforms) {
+            if (transform.getId().equals(fileId)) {
+                return transform.getOperations();
+            }
+        }
+        return null;
+    }
 
     /**
      * Perform Operations
@@ -40,7 +128,7 @@ public class UkubukaTransformer {
      * @param fileRecords
      * @throws TransformException
      */
-    public void performOperations(List<String> fileHeader,
+    private void performTransformOperations(List<String> fileHeader,
             List<FileRecord> fileRecords,
             List<TransformOperations> operationsList)
             throws TransformException {
@@ -48,11 +136,8 @@ public class UkubukaTransformer {
         for (final TransformOperations operation : operationsList) {
             LOGGER.info("Performing Transform: HC" + operation.hashCode());
 
-            /* Get Source & Target Values */
-            String source = operation.getSource();
-            String target = operation.getTarget();
-
             /* Check Whether Column Exists */
+            String source = operation.getSource();
             if (operation.getType() != TransformOperation.ADD
                     && operation.getType() != TransformOperation.NEW
                     && !fileHeader.contains(source)) {
@@ -61,8 +146,8 @@ public class UkubukaTransformer {
             }
 
             /* Perform Operation */
-            performOperation(fileHeader, fileRecords, operation.getType(),
-                    source, target);
+            performTransformOperation(fileHeader, fileRecords,
+                    operation.getType(), source, operation.getTarget());
         }
     }
 
@@ -76,7 +161,7 @@ public class UkubukaTransformer {
      * @param fileRecords
      * @throws TransformException
      */
-    private void performOperation(List<String> fileHeader,
+    private void performTransformOperation(List<String> fileHeader,
             List<FileRecord> fileRecords,
             final TransformOperation operationType, final String source,
             final String target) throws TransformException {
@@ -115,6 +200,11 @@ public class UkubukaTransformer {
         case SWAP:
             doSwap(fileHeader, fileRecords, source, target);
             break;
+
+        /* Unsupported Operation */
+        default:
+            throw new TransformException(
+                    "Unsupported Operation: " + operationType);
         }
     }
 
@@ -175,12 +265,28 @@ public class UkubukaTransformer {
         fileHeader.add(source);
 
         /* Add New Column Values */
-        for (final FileRecord fileRecord : fileRecords) {
-            String expressionValue = String
-                    .valueOf(expressionEvaluator.evaluate(fileRecord, target));
+        for (int index = 0; index < fileRecords.size(); index++) {
+            FileRecord fileRecord = fileRecords.get(index);
+            fileRecord.setIndex(index);
+            String expressionValue = String.valueOf(expressionEvaluator
+                    .evaluate(fileRecord, CollectionUtils.isEmpty(sMap) ? target
+                            : getOriginalTarget(target)));
             LOGGER.info("Evaluated Expression Value: " + expressionValue);
             fileRecord.getData().add(expressionValue);
         }
+    }
+
+    /**
+     * Get Original Target
+     * @param target
+     * @return modifiedTarget
+     */
+    private String getOriginalTarget(final String target) {
+        String modifiedTarget = target;
+        for (final String key : sMap.keySet()) {
+            modifiedTarget = modifiedTarget.replace(key, sMap.get(key));
+        }
+        return modifiedTarget;
     }
 
     /**

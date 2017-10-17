@@ -1,0 +1,11 @@
+$INT$=T(java.lang.Integer).parseInt
+$INTEGER$=T(java.lang.Integer).parseInt
+$LONG$=T(java.lang.Long).parseLong
+$FLOAT$=T(java.lang.Float).parseFloat
+$DOUBLE$=T(java.lang.Double).parseDouble
+$STR$=T(java.lang.String)
+$STRING$=T(java.lang.String)
+$JSON$=new org.json.JSONObject
+$MATH$=T(java.lang.Math)
+$RND$=new java.util.Random
+$RANDOM$=new java.util.Random

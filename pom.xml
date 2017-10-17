@@ -152,6 +152,8 @@
 						<excludes>
 							<exclude>**/com/ukubuka/core/model/</exclude>
 							<exclude>**/com/ukubuka/core/exception/</exclude>
+							<exclude>**/com/ukubuka/core/utilities/</exclude>
+							<exclude>**/com/ukubuka/core/launcher/</exclude>
 						</excludes>
 					</configuration>
 					<executions>

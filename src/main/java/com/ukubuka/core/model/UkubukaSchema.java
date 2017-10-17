@@ -22,7 +22,7 @@ public class UkubukaSchema {
     private List<Transform> transforms;
 
     @JsonProperty("load")
-    private Load loads;
+    private List<Load> loads;
 
     /**
      * Extract
@@ -408,7 +408,7 @@ public class UkubukaSchema {
     /**
      * @return the loads
      */
-    public Load getLoads() {
+    public List<Load> getLoads() {
         return loads;
     }
 
@@ -416,7 +416,7 @@ public class UkubukaSchema {
      * @param loads
      *            the loads to set
      */
-    public void setLoads(Load loads) {
+    public void setLoads(List<Load> loads) {
         this.loads = loads;
     }
 }
