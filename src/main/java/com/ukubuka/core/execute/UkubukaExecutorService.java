@@ -1,21 +1,21 @@
 package com.ukubuka.core.execute;
 
-import java.io.IOException;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.ukubuka.core.exception.ParserException;
-import com.ukubuka.core.exception.ReaderException;
-import com.ukubuka.core.model.SupportedSource;
+import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.exception.WriterException;
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.UkubukaSchema;
-import com.ukubuka.core.model.UkubukaSchema.Extract;
-import com.ukubuka.core.parser.UkubukaParser;
-import com.ukubuka.core.reader.UkubukaReader;
-import com.ukubuka.core.utilities.Constants;
+import com.ukubuka.core.operations.extract.UkubukaExtractor;
+import com.ukubuka.core.operations.load.UkubukaLoader;
+import com.ukubuka.core.operations.transform.UkubukaTransformer;
+import com.ukubuka.core.schema.UkubukaSchemaReader;
 
 /**
  * Ukubuka Executor Service
@@ -25,66 +25,55 @@ import com.ukubuka.core.utilities.Constants;
  */
 @Service
 public class UkubukaExecutorService {
-    /************************* Global Variables *************************/
-    private static final ObjectReader SCHEMA_READER = new ObjectMapper()
-            .readerFor(UkubukaSchema.class);
 
-    /********************** Dependency Injections ***********************/
-    @Autowired
-    private UkubukaReader reader;
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaExecutorService.class);
 
+    /********************************* Dependency Injections ********************************/
     @Autowired
-    @Qualifier("UkubukaDFileParser")
-    private UkubukaParser delimitedFileParser;
+    private UkubukaSchemaReader ukubukaSchemaReader;
 
     @Autowired
-    @Qualifier("UkubukaXMLParser")
-    private UkubukaParser xmlParser;
+    private UkubukaExtractor ukubukaExtractor;
+
+    @Autowired
+    private UkubukaTransformer ukubukaTransformer;
+
+    @Autowired
+    private UkubukaLoader ukubukaLoader;
 
     /**
      * Execute Ukubuka
      * 
      * @param ukubukaSchemaFile
      * @throws ParserException
+     * @throws TransformException
+     * @throws WriterException
      */
-    public void execute(final String ukubukaSchemaFile) throws ParserException {
-        /* Read File*/
-        UkubukaSchema ukubukaSchema = readSchema(ukubukaSchemaFile);
-        for (final Extract extract : ukubukaSchema.getExtracts()) {
-            /* Get File Type */
-            switch (extract.getType()) {
-            /* Delimited File */
-                case CSV:
-                    System.out.println(delimitedFileParser.parseFile(
-                            extract.getLocation(), extract.getFlags()));
-                    break;
-                /* XML File */
-                case XML:
-                    System.out.println(xmlParser.parseFile(
-                            extract.getLocation(), extract.getFlags()));
-                    break;
-                /* Unsupported File */
-                default:
-                    throw new ParserException("File Type Not Supported!");
-            }
-        }
-    }
+    public void execute(final String ukubukaSchemaFile)
+            throws ParserException, TransformException, WriterException {
+        /* Create An In-Memory Data Store */
+        Map<String, FileContents> dataFiles;
 
-    /**
-     * Read Ukubuka Schema
-     * 
-     * @param ukubukaSchemaFile
-     * @return Ukubuka Schema
-     * @throws ParserException
-     */
-    private UkubukaSchema readSchema(final String ukubukaSchemaFile)
-            throws ParserException {
-        try {
-            return SCHEMA_READER.readValue(reader.readFileAsString(
-                    SupportedSource.FILE, ukubukaSchemaFile,
-                    Constants.DEFAULT_FILE_ENCODING));
-        } catch (ReaderException | IOException ex) {
-            throw new ParserException(ex);
-        }
+        /* Read File*/
+        LOGGER.info("Reading Ukubuka Schema...");
+        UkubukaSchema ukubukaSchema = ukubukaSchemaReader
+                .readSchema(ukubukaSchemaFile);
+
+        /* Perform Extracts */
+        LOGGER.info("Performing Extract(s)...");
+        dataFiles = ukubukaExtractor
+                .performOperations(ukubukaSchema.getExtracts());
+
+        /* Perform Transformations */
+        LOGGER.info("Performing Transformation(s)...");
+        dataFiles = ukubukaTransformer.performOperations(dataFiles,
+                ukubukaSchema.getTransforms());
+
+        /* Perform Load */
+        LOGGER.info("Performing Load(s)...");
+        dataFiles = ukubukaLoader.performOperations(dataFiles,
+                ukubukaSchema.getLoads());
     }
 }

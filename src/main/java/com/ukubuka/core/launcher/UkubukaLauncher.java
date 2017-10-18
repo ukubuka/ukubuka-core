@@ -27,7 +27,7 @@ public class UkubukaLauncher {
     /*********************************** Main Entry Point ***********************************/
     public static void main(String[] args) throws Exception {
         /* Execute Program */
-        LOGGER.info("Starting Ukubuka...");
+        LOGGER.info("Starting Ukubuka Engine...");
         new UkubukaLauncher().execute(args);
     }
 
