@@ -30,7 +30,7 @@ import com.ukubuka.core.utilities.Utilities;
 public class UkubukaDFileParser extends UkubukaBaseParser
         implements UkubukaParser {
 
-    /************************************ Logger Instance ***********************************/
+    /************************************* Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UkubukaDFileParser.class);
 
@@ -97,8 +97,7 @@ public class UkubukaDFileParser extends UkubukaBaseParser
                     Arrays.asList(fileContents));
             Utilities.applyNewDelimiter(fileLines,
                     StringUtils.isEmpty(fileDelimiter)
-                            ? Constants.COMMON_FILE_DELIMITER
-                            : fileDelimiter,
+                            ? Constants.COMMON_FILE_DELIMITER : fileDelimiter,
                     Constants.DEFAULT_FILE_DELIMITER);
             return fileLines;
         } catch (ReaderException ex) {
