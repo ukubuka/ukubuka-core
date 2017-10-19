@@ -73,7 +73,6 @@ public class UkubukaDFileParserTest {
                 Mockito.anyString());
         assertEquals(2, fileContents.getHeader().size());
         assertEquals(1, fileContents.getData().size());
-
     }
 
     @Test
@@ -92,7 +91,6 @@ public class UkubukaDFileParserTest {
                 Mockito.anyString());
         assertEquals(2, fileContents.getHeader().size());
         assertEquals(1, fileContents.getData().size());
-
     }
 
     @Test
@@ -111,7 +109,6 @@ public class UkubukaDFileParserTest {
                 Mockito.anyString());
         assertEquals(2, fileContents.getHeader().size());
         assertEquals(1, fileContents.getData().size());
-
     }
 
     @Test
@@ -130,7 +127,6 @@ public class UkubukaDFileParserTest {
                 Mockito.anyString());
         assertEquals(2, fileContents.getHeader().size());
         assertEquals(1, fileContents.getData().size());
-
     }
 
     @Test(expected = ParserException.class)
@@ -166,8 +162,6 @@ public class UkubukaDFileParserTest {
 
     @Test
     public void test_getParserInfo() {
-
-        String className = ukubukaDFileParser.getParserInfo();
-        assertEquals(className, "UkubukaDFileParser");
+        assertEquals("UkubukaDFileParser", ukubukaDFileParser.getParserInfo());
     }
 }
