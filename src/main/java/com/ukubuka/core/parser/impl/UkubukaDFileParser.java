@@ -97,8 +97,7 @@ public class UkubukaDFileParser extends UkubukaBaseParser
                     Arrays.asList(fileContents));
             Utilities.applyNewDelimiter(fileLines,
                     StringUtils.isEmpty(fileDelimiter)
-                            ? Constants.COMMON_FILE_DELIMITER
-                            : fileDelimiter,
+                            ? Constants.COMMON_FILE_DELIMITER : fileDelimiter,
                     Constants.DEFAULT_FILE_DELIMITER);
             return fileLines;
         } catch (ReaderException ex) {
