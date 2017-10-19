@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
-import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
@@ -44,12 +43,11 @@ public class UkubukaLoader {
      * @param fileHeader
      * @param operationsList
      * @param fileRecords
-     * @throws TransformException
      * @throws WriterException 
      */
     public Map<String, FileContents> performOperations(
             Map<String, FileContents> dataFiles, final List<Load> loads)
-            throws TransformException, WriterException {
+            throws WriterException {
         /* Iterate Operations */
         for (final Load load : loads) {
             performLoad(load, dataFiles);
