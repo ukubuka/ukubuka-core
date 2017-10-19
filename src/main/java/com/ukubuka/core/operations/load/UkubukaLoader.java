@@ -17,7 +17,6 @@ import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.LoadOperation;
 import com.ukubuka.core.model.SupportedFileType;
 import com.ukubuka.core.model.UkubukaSchema.Load;
-import com.ukubuka.core.utilities.Utilities;
 import com.ukubuka.core.writer.UkubukaWriter;
 
 /**
@@ -65,36 +64,32 @@ public class UkubukaLoader {
     private void performLoad(final Load load,
             final Map<String, FileContents> dataFiles) throws WriterException {
         /* Check Whether Valid Load Operations */
-        if (null != load) {
-            LOGGER.info("Performing Load: HC" + load.hashCode());
+        LOGGER.info("Performing Load: HC" + load.hashCode());
 
-            /* Get File Contents */
-            FileContents fileContents = new FileContents(
-                    new ArrayList<String>(), new ArrayList<FileRecord>());
-            fileContents.setHeader(dataFiles
-                    .get(load.getOperations().getHeader()).getHeader());
+        /* Get File Contents */
+        FileContents fileContents = new FileContents(new ArrayList<String>(),
+                new ArrayList<FileRecord>());
+        fileContents.setHeader(
+                dataFiles.get(load.getOperations().getHeader()).getHeader());
 
-            /* Iterate Data Sources */
-            for (final String fileId : load.getOperations().getData()) {
-                /* Check Flag For DISTINCT */
-                fileContents.getData()
-                        .addAll(LoadOperation.DISTINCT == load.getOperations()
-                                .getFilter()
-                                        ? new HashSet<>(
-                                                dataFiles.get(fileId).getData())
-                                        : dataFiles.get(fileId).getData());
-            }
+        /* Iterate Data Sources */
+        for (final String fileId : load.getOperations().getData()) {
+            /* Check Flag For DISTINCT */
+            fileContents.getData().addAll(
+                    LoadOperation.DISTINCT == load.getOperations().getFilter()
+                            ? new HashSet<>(dataFiles.get(fileId).getData())
+                            : dataFiles.get(fileId).getData());
+        }
 
-            /* Write File */
-            LOGGER.info("Writing File...");
-            try {
-                LOGGER.info("ID: " + load.getId() + " | Type: " + load.getType()
-                        + " | Location: " + load.getLocation());
-                writeFile(load.getType(), load.getLocation(),
-                        fileContents.getHeader(), fileContents.getData());
-            } catch (ParserException ex) {
-                throw new WriterException(ex);
-            }
+        /* Write File */
+        LOGGER.info("Writing File...");
+        try {
+            LOGGER.info("ID: " + load.getId() + " | Type: " + load.getType()
+                    + " | Location: " + load.getLocation());
+            writeFile(load.getType(), load.getLocation(),
+                    fileContents.getHeader(), fileContents.getData());
+        } catch (ParserException ex) {
+            throw new WriterException(ex);
         }
     }
 
@@ -115,12 +110,12 @@ public class UkubukaLoader {
         switch (supportedFileType) {
         /* Delimited File */
         case CSV:
-            Utilities.writeFile(completeFileName,
+            writer.writeFile(completeFileName,
                     writer.writeCSV(header, data).toString());
             break;
         /* XML File */
         case JSON:
-            Utilities.writeFile(completeFileName, writer
+            writer.writeFile(completeFileName, writer
                     .prettyPrint(writer.writeJSON(header, data).toString()));
             break;
         /* Unsupported File */
