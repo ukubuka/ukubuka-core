@@ -108,7 +108,7 @@ public class UkubukaWriterTest {
 
     @Test(expected = WriterException.class)
     public void test_writeFile_failure() throws WriterException {
-        ukubukaWriter.writeFile("\\", "fooBar");
+        ukubukaWriter.writeFile("", "fooBar");
     }
 
     @Test
