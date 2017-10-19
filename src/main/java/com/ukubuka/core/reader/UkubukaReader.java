@@ -44,9 +44,9 @@ public class UkubukaReader {
     public List<String> readFile(final SupportedSource source,
             final String completeFileName, final String fileEncoding,
             final String endLineDelimiter) throws ReaderException {
-        LOGGER.info("Reading File - Source: " + source + " | Location: "
-                + completeFileName + " | Encoding: " + fileEncoding
-                + " | Delimiter: " + endLineDelimiter);
+        LOGGER.info(
+                "Reading File - Source: {} | Location: {} | Encoding: {} | Delimiter: {}",
+                source, completeFileName, fileEncoding, endLineDelimiter);
         return new ArrayList<>(Arrays
                 .asList(readFileAsString(source, completeFileName, fileEncoding)
                         .split(StringUtils.isEmpty(endLineDelimiter)

@@ -45,8 +45,6 @@ public class UkubukaReaderTest {
     @Test
     public void test_readFileAsString_file_withoutEncoding_success()
             throws ReaderException {
-        System.out.println(this.getClass().getClassLoader()
-                .getResource("test-dataset.csv"));
         ukubukaReader
                 .readFileAsString(SupportedSource.FILE,
                         this.getClass().getClassLoader()

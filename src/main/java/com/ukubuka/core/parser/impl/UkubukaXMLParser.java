@@ -29,8 +29,8 @@ public class UkubukaXMLParser implements UkubukaParser {
     @Override
     public FileContents parseFile(final String completeFileName,
             Map<String, Object> flags) throws ParserException {
-        LOGGER.info("Parsing XML File - Location: " + completeFileName
-                + " | Flags: " + flags);
+        LOGGER.info("Parsing XML File - Location: {} | Flags: {}",
+                completeFileName, flags);
         return null;
     }
 

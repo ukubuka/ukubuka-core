@@ -73,7 +73,6 @@ public class UkubukaExecutorService {
 
         /* Perform Load */
         LOGGER.info("Performing Load(s)...");
-        dataFiles = ukubukaLoader.performOperations(dataFiles,
-                ukubukaSchema.getLoads());
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema.getLoads());
     }
 }

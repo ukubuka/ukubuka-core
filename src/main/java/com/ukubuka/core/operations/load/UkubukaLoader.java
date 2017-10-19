@@ -64,7 +64,7 @@ public class UkubukaLoader {
     private void performLoad(final Load load,
             final Map<String, FileContents> dataFiles) throws WriterException {
         /* Check Whether Valid Load Operations */
-        LOGGER.info("Performing Load: HC" + load.hashCode());
+        LOGGER.info("Performing Load: HC{}", load.hashCode());
 
         /* Get File Contents */
         FileContents fileContents = new FileContents(new ArrayList<String>(),
@@ -84,8 +84,8 @@ public class UkubukaLoader {
         /* Write File */
         LOGGER.info("Writing File...");
         try {
-            LOGGER.info("ID: " + load.getId() + " | Type: " + load.getType()
-                    + " | Location: " + load.getLocation());
+            LOGGER.info("ID: {} | Type: {} | Location: {}", load.getId(),
+                    load.getType(), load.getLocation());
             writeFile(load.getType(), load.getLocation(),
                     fileContents.getHeader(), fileContents.getData());
         } catch (ParserException ex) {
@@ -110,8 +110,7 @@ public class UkubukaLoader {
         switch (supportedFileType) {
         /* Delimited File */
         case CSV:
-            writer.writeFile(completeFileName,
-                    writer.writeCSV(header, data).toString());
+            writer.writeFile(completeFileName, writer.writeCSV(header, data));
             break;
         /* XML File */
         case JSON:

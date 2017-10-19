@@ -53,14 +53,14 @@ public final class Utilities {
                     oldDelimiter.charAt(0));
             StringBuilder builder = new StringBuilder()
                     .append(dataRow.charAt(0));
-            int prev_index = 0;
+            int previousIndex = 0;
             for (final int index : indices) {
-                builder.append(dataRow.substring(1, index - prev_index))
+                builder.append(dataRow.substring(1, index - previousIndex))
                         .append(newDelimiter);
-                dataRow = dataRow.substring(index - prev_index);
-                prev_index = index;
+                dataRow = dataRow.substring(index - previousIndex);
+                previousIndex = index;
             }
-            String output = builder.append(dataRow.substring(1, 1 + prev_index))
+            String output = builder.append(dataRow.substring(1))
                     .append(newDelimiter).toString();
             fileContents.set(i, output.substring(0,
                     output.length() - newDelimiter.length()));
