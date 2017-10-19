@@ -30,7 +30,7 @@ import com.ukubuka.core.utilities.Utilities;
 public class UkubukaDFileParser extends UkubukaBaseParser
         implements UkubukaParser {
 
-    /************************************* Logger Instance ***********************************/
+    /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UkubukaDFileParser.class);
 
