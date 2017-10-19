@@ -46,7 +46,7 @@ public class UkubukaWriter {
      */
     public JSONArray writeJSON(List<String> fileHeader,
             List<FileRecord> fileRecords) {
-        LOGGER.info("Writing JSON: #" + fileRecords.size() + " Records");
+        LOGGER.info("Writing JSON: #{} Records", fileRecords.size());
 
         /* Convert To JSON */
         return CDL.toJSONArray(knitFile(fileHeader, fileRecords));
@@ -61,7 +61,7 @@ public class UkubukaWriter {
      */
     public String writeCSV(List<String> fileHeader,
             List<FileRecord> fileRecords) {
-        LOGGER.info("Writing CSV: #" + fileRecords.size() + " Records");
+        LOGGER.info("Writing CSV: #{} Records", fileRecords.size());
 
         /* Convert To CSV */
         return knitFile(fileHeader, fileRecords);
@@ -98,8 +98,8 @@ public class UkubukaWriter {
 
         /* Vomit String */
         String outputFileContent = fileContents.toString();
-        LOGGER.info(
-                "Output Content Bytes: " + outputFileContent.getBytes().length);
+        LOGGER.info("Output Content Bytes: {}",
+                outputFileContent.getBytes().length);
         return outputFileContent;
     }
 

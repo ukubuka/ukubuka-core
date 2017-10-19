@@ -40,8 +40,8 @@ public class UkubukaDFileParser extends UkubukaBaseParser
     @Override
     public FileContents parseFile(final String completeFileName,
             Map<String, Object> flags) throws ParserException {
-        LOGGER.info("Parsing Delimited File - Location: " + completeFileName
-                + " | Flags: " + flags);
+        LOGGER.info("Parsing Delimited File - Location: {} | Flags: {}",
+                completeFileName, flags);
         return super.getFileContents(readWithOptions(completeFileName, flags));
     }
 
@@ -97,7 +97,8 @@ public class UkubukaDFileParser extends UkubukaBaseParser
                     Arrays.asList(fileContents));
             Utilities.applyNewDelimiter(fileLines,
                     StringUtils.isEmpty(fileDelimiter)
-                            ? Constants.COMMON_FILE_DELIMITER : fileDelimiter,
+                            ? Constants.COMMON_FILE_DELIMITER
+                            : fileDelimiter,
                     Constants.DEFAULT_FILE_DELIMITER);
             return fileLines;
         } catch (ReaderException ex) {

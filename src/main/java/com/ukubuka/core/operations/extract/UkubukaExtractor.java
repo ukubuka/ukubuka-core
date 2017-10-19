@@ -48,7 +48,7 @@ public class UkubukaExtractor {
 
         /* Iterate Extracts */
         for (final Extract extract : extracts) {
-            LOGGER.info("Performing Extract: HC" + extract.hashCode());
+            LOGGER.info("Performing Extract: HC{}", extract.hashCode());
             FileContents fileContents = null;
 
             /* Get File Type */
