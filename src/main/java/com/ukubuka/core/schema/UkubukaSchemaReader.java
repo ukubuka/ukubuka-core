@@ -45,6 +45,7 @@ public class UkubukaSchemaReader {
      */
     public UkubukaSchema readSchema(final String ukubukaSchemaFile)
             throws ParserException {
+        LOGGER.info("Start Reading Ukubuka Schema...");
         try {
             return SCHEMA_READER.readValue(reader.readFileAsString(
                     SupportedSource.FILE, ukubukaSchemaFile,
