@@ -1,29 +1,29 @@
 package com.ukubuka.core.exception;
 
 /**
- * Schema Exception
+ * Transform Exception
  * 
  * @author agrawroh
  * @version v1.0
  */
-public class SchemaException extends Exception {
+public class TransformException extends Exception {
 
-    private static final long serialVersionUID = 3054275486189077703L;
+    private static final long serialVersionUID = 7567668318371591962L;
 
     /************************* Constructor *************************/
-    public SchemaException(String message) {
+    public TransformException(String message) {
         super(message);
     }
 
-    public SchemaException(Throwable cause) {
+    public TransformException(Throwable cause) {
         super(cause);
     }
 
-    public SchemaException(String message, Throwable cause) {
+    public TransformException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SchemaException(String message, Throwable cause,
+    public TransformException(String message, Throwable cause,
             boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

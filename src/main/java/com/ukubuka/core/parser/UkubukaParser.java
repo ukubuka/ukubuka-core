@@ -1,6 +1,9 @@
 package com.ukubuka.core.parser;
 
+import java.util.Map;
+
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.model.FileContents;
 
 /**
  * Ukubuka Parser Interface
@@ -13,12 +16,13 @@ public interface UkubukaParser {
     /**
      * File Parser
      * 
-     * @param Complete
-     *            File Name
+     * @param completeFileName
+     * @param flags
      * @return File Contents
      * @throws ParserException
      */
-    String parseFile(String completeFileName) throws ParserException;
+    FileContents parseFile(final String completeFileName,
+            Map<String, Object> flags) throws ParserException;
 
     /**
      * Get Parser Information
