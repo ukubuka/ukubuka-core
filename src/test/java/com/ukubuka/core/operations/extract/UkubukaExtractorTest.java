@@ -1,6 +1,7 @@
 package com.ukubuka.core.operations.extract;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +52,8 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.CSV);
 
-        ukubukaExtractor.performOperations(Arrays.asList(extracts));
+        ukubukaExtractor.performOperations(new HashMap<>(),
+                Arrays.asList(extracts));
 
         Mockito.verify(delimitedFileParser, Mockito.times(1)).parseFile(
                 Mockito.anyString(),
@@ -69,7 +71,8 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.XML);
 
-        ukubukaExtractor.performOperations(Arrays.asList(extracts));
+        ukubukaExtractor.performOperations(new HashMap<>(),
+                Arrays.asList(extracts));
 
         Mockito.verify(xmlParser, Mockito.times(1)).parseFile(
                 Mockito.anyString(),
@@ -88,7 +91,8 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.JSON);
 
-        ukubukaExtractor.performOperations(Arrays.asList(extracts));
+        ukubukaExtractor.performOperations(new HashMap<>(),
+                Arrays.asList(extracts));
     }
 
     @Test(expected = NullPointerException.class)
@@ -101,6 +105,7 @@ public class UkubukaExtractorTest {
         extracts.setId("foo");
         extracts.setLocation("");
 
-        ukubukaExtractor.performOperations(Arrays.asList(extracts));
+        ukubukaExtractor.performOperations(new HashMap<>(),
+                Arrays.asList(extracts));
     }
 }

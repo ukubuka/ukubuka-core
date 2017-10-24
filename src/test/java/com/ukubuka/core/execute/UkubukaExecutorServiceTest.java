@@ -1,7 +1,5 @@
 package com.ukubuka.core.execute;
 
-import java.util.HashMap;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -59,19 +57,17 @@ public class UkubukaExecutorServiceTest {
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
                 .thenReturn(new UkubukaSchema());
 
-        Mockito.when(ukubukaExtractor.performOperations(
-                Mockito.anyListOf(UkubukaSchema.Extract.class)))
-                .thenReturn(new HashMap<String, FileContents>());
-
-        Mockito.when(ukubukaTransformer.performOperations(
+        Mockito.doNothing().when(ukubukaExtractor).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Transform.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Extract.class));
 
-        Mockito.when(ukubukaLoader.performOperations(
+        Mockito.doNothing().when(ukubukaTransformer).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Load.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Transform.class));
+
+        Mockito.doNothing().when(ukubukaLoader).performOperations(
+                Mockito.anyMapOf(String.class, FileContents.class),
+                Mockito.anyListOf(UkubukaSchema.Load.class));
 
         ukubukaExecutorService.execute("foobar");
 
@@ -79,6 +75,7 @@ public class UkubukaExecutorServiceTest {
                 .thenReturn(new UkubukaSchema());
 
         Mockito.verify(ukubukaExtractor, Mockito.times(1)).performOperations(
+                Mockito.anyMapOf(String.class, FileContents.class),
                 Mockito.anyListOf(UkubukaSchema.Extract.class));
 
         Mockito.verify(ukubukaTransformer, Mockito.times(1)).performOperations(
@@ -96,19 +93,17 @@ public class UkubukaExecutorServiceTest {
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
                 .thenThrow(new ParserException("foo"));
 
-        Mockito.when(ukubukaExtractor.performOperations(
-                Mockito.anyListOf(UkubukaSchema.Extract.class)))
-                .thenReturn(new HashMap<String, FileContents>());
-
-        Mockito.when(ukubukaTransformer.performOperations(
+        Mockito.doNothing().when(ukubukaExtractor).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Transform.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Extract.class));
 
-        Mockito.when(ukubukaLoader.performOperations(
+        Mockito.doNothing().when(ukubukaTransformer).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Load.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Transform.class));
+
+        Mockito.doNothing().when(ukubukaLoader).performOperations(
+                Mockito.anyMapOf(String.class, FileContents.class),
+                Mockito.anyListOf(UkubukaSchema.Load.class));
 
         ukubukaExecutorService.execute("foobar");
     }
@@ -119,19 +114,18 @@ public class UkubukaExecutorServiceTest {
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
                 .thenReturn(new UkubukaSchema());
 
-        Mockito.when(ukubukaExtractor.performOperations(
-                Mockito.anyListOf(UkubukaSchema.Extract.class)))
-                .thenThrow(new ParserException("foo"));
+        Mockito.doThrow(new ParserException("foo")).when(ukubukaExtractor)
+                .performOperations(
+                        Mockito.anyMapOf(String.class, FileContents.class),
+                        Mockito.anyListOf(UkubukaSchema.Extract.class));
 
-        Mockito.when(ukubukaTransformer.performOperations(
+        Mockito.doNothing().when(ukubukaTransformer).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Transform.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Transform.class));
 
-        Mockito.when(ukubukaLoader.performOperations(
+        Mockito.doNothing().when(ukubukaLoader).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Load.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Load.class));
 
         ukubukaExecutorService.execute("foobar");
     }
@@ -142,19 +136,18 @@ public class UkubukaExecutorServiceTest {
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
                 .thenReturn(new UkubukaSchema());
 
-        Mockito.when(ukubukaExtractor.performOperations(
-                Mockito.anyListOf(UkubukaSchema.Extract.class)))
-                .thenReturn(new HashMap<String, FileContents>());
-
-        Mockito.when(ukubukaTransformer.performOperations(
+        Mockito.doNothing().when(ukubukaExtractor).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Transform.class)))
-                .thenThrow(new TransformException("foo"));
+                Mockito.anyListOf(UkubukaSchema.Extract.class));
 
-        Mockito.when(ukubukaLoader.performOperations(
+        Mockito.doThrow(new TransformException("foo")).when(ukubukaTransformer)
+                .performOperations(
+                        Mockito.anyMapOf(String.class, FileContents.class),
+                        Mockito.anyListOf(UkubukaSchema.Transform.class));
+
+        Mockito.doNothing().when(ukubukaLoader).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Load.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Load.class));
 
         ukubukaExecutorService.execute("foobar");
     }
@@ -165,19 +158,18 @@ public class UkubukaExecutorServiceTest {
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
                 .thenReturn(new UkubukaSchema());
 
-        Mockito.when(ukubukaExtractor.performOperations(
-                Mockito.anyListOf(UkubukaSchema.Extract.class)))
-                .thenReturn(new HashMap<String, FileContents>());
-
-        Mockito.when(ukubukaTransformer.performOperations(
+        Mockito.doNothing().when(ukubukaExtractor).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Transform.class)))
-                .thenReturn(new HashMap<String, FileContents>());
+                Mockito.anyListOf(UkubukaSchema.Extract.class));
 
-        Mockito.when(ukubukaLoader.performOperations(
+        Mockito.doNothing().when(ukubukaTransformer).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
-                Mockito.anyListOf(UkubukaSchema.Load.class)))
-                .thenThrow(new WriterException("foo"));
+                Mockito.anyListOf(UkubukaSchema.Transform.class));
+
+        Mockito.doThrow(new WriterException("foo")).when(ukubukaLoader)
+                .performOperations(
+                        Mockito.anyMapOf(String.class, FileContents.class),
+                        Mockito.anyListOf(UkubukaSchema.Load.class));
 
         ukubukaExecutorService.execute("foobar");
     }

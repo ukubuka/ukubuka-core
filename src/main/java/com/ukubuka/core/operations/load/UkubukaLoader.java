@@ -44,14 +44,12 @@ public class UkubukaLoader {
      * @param fileRecords
      * @throws WriterException 
      */
-    public Map<String, FileContents> performOperations(
-            Map<String, FileContents> dataFiles, final List<Load> loads)
-            throws WriterException {
+    public void performOperations(Map<String, FileContents> dataFiles,
+            final List<Load> loads) throws WriterException {
         /* Iterate Operations */
         for (final Load load : loads) {
             performLoad(load, dataFiles);
         }
-        return dataFiles;
     }
 
     /**

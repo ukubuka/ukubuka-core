@@ -81,14 +81,11 @@ public class UkubukaTransformer {
     /**
      * Perform Transformations
      * 
-     * @param fileId
+     * @param dataFiles
      * @param transforms
-     * @param fileContents
-     * @return 
      * @throws TransformException
      */
-    public Map<String, FileContents> performOperations(
-            Map<String, FileContents> dataFiles,
+    public void performOperations(Map<String, FileContents> dataFiles,
             final List<Transform> transforms) throws TransformException {
         /* Get File Transformation */
         for (final Entry<String, FileContents> dataFile : dataFiles
@@ -101,7 +98,6 @@ public class UkubukaTransformer {
                         dataFile.getValue().getData(), fileTransforms);
             }
         }
-        return dataFiles;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.ukubuka.core.operations.extract;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,14 +37,14 @@ public class UkubukaExtractor {
     private UkubukaParser delimitedFileParser;
 
     /**
-     * Perform Operation
-     * @param extracts
-     * @throws ParserException
-     */
-    public Map<String, FileContents> performOperations(
+    * Perform Extracts
+    * 
+    * @param extracts
+    * @param dataFiles
+    * @throws ParserException
+    */
+    public void performOperations(Map<String, FileContents> dataFiles,
             final List<Extract> extracts) throws ParserException {
-        Map<String, FileContents> dataFiles = new HashMap<>();
-
         /* Iterate Extracts */
         for (final Extract extract : extracts) {
             LOGGER.info("Performing Extract: HC{}", extract.hashCode());
@@ -71,8 +70,5 @@ public class UkubukaExtractor {
             /* Store DataSet */
             dataFiles.put(extract.getId(), fileContents);
         }
-
-        /* Return DataFiles */
-        return dataFiles;
     }
 }
