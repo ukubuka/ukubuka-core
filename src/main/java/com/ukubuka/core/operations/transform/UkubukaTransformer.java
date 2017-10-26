@@ -309,7 +309,7 @@ public class UkubukaTransformer {
         for (int index = 0; index < fileRecords.size(); index++) {
             FileRecord fileRecord = fileRecords.get(index);
             fileRecord.setIndex(index);
-            String expressionValue = evaluateExpression(fileRecord, target);
+            Object expressionValue = evaluateExpression(fileRecord, target);
             fileRecord.getData().add(expressionValue);
         }
     }
@@ -354,7 +354,7 @@ public class UkubukaTransformer {
 
         /* Move Data Column Values */
         for (final FileRecord fileRecord : fileRecords) {
-            String data = fileRecord.getData().remove(sourceIndex);
+            Object data = fileRecord.getData().remove(sourceIndex);
             fileRecord.getData().add(targetIndex, data);
         }
     }
@@ -429,9 +429,10 @@ public class UkubukaTransformer {
         Iterator<FileRecord> fileRecordsIterator = fileRecords.iterator();
         while (fileRecordsIterator.hasNext()) {
             FileRecord fileRecord = fileRecordsIterator.next();
-            String expressionValue = evaluateExpression(fileRecord, target);
-            if ((isExclude && Boolean.parseBoolean(expressionValue))
-                    || !(isExclude || Boolean.parseBoolean(expressionValue))) {
+            boolean expressionValue = (boolean) evaluateExpression(fileRecord,
+                    target);
+            if ((isExclude && expressionValue)
+                    || !(isExclude || expressionValue)) {
                 fileRecordsIterator.remove();
             }
         }
@@ -444,11 +445,11 @@ public class UkubukaTransformer {
      * @param target
      * @return Evaluated Expression
      */
-    private String evaluateExpression(final FileRecord fileRecord,
+    private Object evaluateExpression(final FileRecord fileRecord,
             final String target) {
-        String expressionValue = String.valueOf(expressionEvaluator
-                .evaluate(fileRecord, CollectionUtils.isEmpty(sMap) ? target
-                        : getOriginalTarget(target)));
+        Object expressionValue = expressionEvaluator.evaluate(fileRecord,
+                CollectionUtils.isEmpty(sMap) ? target
+                        : getOriginalTarget(target));
         LOGGER.info("Evaluated Expression Value: {}", expressionValue);
         return expressionValue;
     }
