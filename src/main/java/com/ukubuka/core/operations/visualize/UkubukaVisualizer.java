@@ -56,7 +56,7 @@ public class UkubukaVisualizer {
      * @param fileHeader
      * @param operationsList
      * @param fileRecords
-     * @throws WriterException 
+     * @throws WriterException
      */
     public Map<String, FileContents> performOperations(
             Map<String, FileContents> dataFiles, final List<Load> loads)

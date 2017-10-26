@@ -17,6 +17,7 @@ import com.ukubuka.core.utilities.Constants;
 
 /**
  * Ukubuka Scripts Reader
+ * 
  * @author agrawroh
  * @version v1.0
  */
@@ -39,6 +40,7 @@ public class UkubukaScriptsReader {
 
     /**
      * Read Scripts
+     * 
      * @param scriptsDirectoryRoot
      * @return Map<HTMLTag, Scripts>
      * @throws ReaderException
@@ -73,6 +75,7 @@ public class UkubukaScriptsReader {
 
     /**
      * Read Script Files
+     * 
      * @param resourceDirectoryPath
      * @param htmlTag
      * @return
@@ -92,11 +95,12 @@ public class UkubukaScriptsReader {
     }
 
     /**
-    * Get File Contents
-    * @param completeFileName
-    * @return fileContents
-    * @throws ReaderException
-    */
+     * Get File Contents
+     * 
+     * @param completeFileName
+     * @return fileContents
+     * @throws ReaderException
+     */
     private String getFileContents(final String completeFileName)
             throws ReaderException {
         reader = new UkubukaReader();

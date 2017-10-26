@@ -42,32 +42,24 @@ import com.ukubuka.core.utilities.Constants;
 @Component
 public class UkubukaTransformer {
 
-    /************************************
-     * Logger Instance
-     ***********************************/
+    /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UkubukaTransformer.class);
 
-    /************************************
-     * Global Variables
-     **********************************/
+    /************************************ Global Variables **********************************/
     private Map<String, String> sMap;
     private static final EnumSet<TransformOperation> TRANSFORM_OPERATION_EXCEPTIONS = EnumSet
             .of(TransformOperation.ADD, TransformOperation.NEW,
                     TransformOperation.INCLUDE, TransformOperation.EXCLUDE);
 
-    /********************************
-     * Dependency Injections
-     *********************************/
+    /******************************** Dependency Injections *********************************/
     @Autowired
     private UkubukaExpressionEvaluator expressionEvaluator;
 
     @Autowired
     private UkubukaReader reader;
 
-    /***********************************
-     * Post Construct
-     *************************************/
+    /*********************************** Post Construct *************************************/
     @PostConstruct
     public void initShortcutMap() throws ReaderException {
         /* Get Mappings File */

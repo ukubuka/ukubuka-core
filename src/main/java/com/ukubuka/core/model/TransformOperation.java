@@ -19,7 +19,7 @@ public enum TransformOperation {
     /* Operation */
     private String operation;
 
-    /********** Private Constructor **********/
+    /************** Private Constructor ***************/
     private TransformOperation(final String operation) {
         this.operation = operation;
     }
