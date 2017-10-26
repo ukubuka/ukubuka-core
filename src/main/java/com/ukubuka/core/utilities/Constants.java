@@ -22,6 +22,12 @@ public final class Constants {
     public static final String COLUMN_ENCOLSING_QUOTE = "\"";
     public static final String SHORTCUT_MAP_DELIMITER = "=";
 
+    /****************************** Scripts Reader Constants ******************************/
+    public static final String CONTENT_TAG = "$$$CONTENT$$$";
+    public static final String FORWARD_SLASH = "/";
+    public static final String OPENING_BRACKET = "<";
+    public static final String CLOSING_BRACKET = ">";
+
     /******************************** Private Constructor *********************************/
     private Constants() {
         /* Do Nothing */

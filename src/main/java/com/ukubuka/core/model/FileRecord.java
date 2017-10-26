@@ -13,7 +13,7 @@ import org.springframework.util.CollectionUtils;
 public class FileRecord {
 
     private int index;
-    private List<String> data;
+    private List<Object> data;
 
     /***************************** Default Constructor ****************************/
     public FileRecord() {
@@ -21,14 +21,14 @@ public class FileRecord {
     }
 
     /****************************** Copy Constructor ******************************/
-    public FileRecord(List<String> data) {
+    public FileRecord(List<Object> data) {
         this.data = data;
     }
 
     /**
      * @return the data
      */
-    public List<String> getData() {
+    public List<Object> getData() {
         return data;
     }
 
@@ -36,7 +36,7 @@ public class FileRecord {
      * @param data
      *            the data to set
      */
-    public void setData(List<String> data) {
+    public void setData(List<Object> data) {
         this.data = data;
     }
 
