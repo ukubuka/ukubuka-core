@@ -71,8 +71,10 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
@@ -87,8 +89,9 @@ public class UkubukaTransformerTest {
 
         ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
@@ -108,8 +111,10 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
@@ -129,8 +134,9 @@ public class UkubukaTransformerTest {
 
         ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
@@ -150,8 +156,10 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
@@ -165,8 +173,9 @@ public class UkubukaTransformerTest {
 
         ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
@@ -186,8 +195,10 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-Y");
@@ -201,8 +212,9 @@ public class UkubukaTransformerTest {
 
         ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
-        Mockito.verify(expressionEvaluator, Mockito.times(0))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        Mockito.verify(expressionEvaluator, Mockito.times(0)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
     }
 
     @Test

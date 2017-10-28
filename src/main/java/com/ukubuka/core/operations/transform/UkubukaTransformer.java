@@ -1,5 +1,6 @@
 package com.ukubuka.core.operations.transform;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -53,7 +54,10 @@ public class UkubukaTransformer implements UkubukaOperations {
     private Map<String, String> sMap;
     private static final EnumSet<TransformOperation> TRANSFORM_OPERATION_EXCEPTIONS = EnumSet
             .of(TransformOperation.ADD, TransformOperation.NEW,
-                    TransformOperation.INCLUDE, TransformOperation.EXCLUDE);
+                    TransformOperation.INCLUDE, TransformOperation.EXCLUDE,
+                    TransformOperation.SUM, TransformOperation.AVG,
+                    TransformOperation.MIN, TransformOperation.MAX,
+                    TransformOperation.COUNT);
 
     /******************************** Dependency Injections *********************************/
     @Autowired
@@ -146,8 +150,7 @@ public class UkubukaTransformer implements UkubukaOperations {
             throws TransformException {
         if (!CollectionUtils.isEmpty(transformOperations)) {
             LOGGER.info("Transform Count: #{}", transformOperations.size());
-            performTransformOperations(fileContents.getHeader(),
-                    fileContents.getData(), transformOperations);
+            performTransformOperations(fileContents, transformOperations);
         }
     }
 
@@ -177,8 +180,7 @@ public class UkubukaTransformer implements UkubukaOperations {
      * @param fileRecords
      * @throws TransformException
      */
-    private void performTransformOperations(List<String> fileHeader,
-            List<FileRecord> fileRecords,
+    private void performTransformOperations(FileContents fileContents,
             List<TransformOperations> operationsList)
             throws TransformException {
         /* Iterate Operations */
@@ -188,14 +190,14 @@ public class UkubukaTransformer implements UkubukaOperations {
             /* Check Whether Column Exists */
             String source = operation.getSource();
             if (!TRANSFORM_OPERATION_EXCEPTIONS.contains(operation.getType())
-                    && !fileHeader.contains(source)) {
+                    && !fileContents.getHeader().contains(source)) {
                 throw new TransformException("Column Not Found! Name: " + source
-                        + " | Header: " + fileHeader);
+                        + " | Header: " + fileContents.getHeader());
             }
 
             /* Perform Operation */
-            performTransformOperation(fileHeader, fileRecords,
-                    operation.getType(), source, operation.getTarget());
+            performTransformOperation(fileContents, operation.getType(), source,
+                    operation.getTarget());
         }
     }
 
@@ -209,10 +211,14 @@ public class UkubukaTransformer implements UkubukaOperations {
      * @param fileRecords
      * @throws TransformException
      */
-    private void performTransformOperation(List<String> fileHeader,
-            List<FileRecord> fileRecords,
+    private void performTransformOperation(FileContents fileContents,
             final TransformOperation operationType, final String source,
             final String target) throws TransformException {
+        /* Get File Contents */
+        List<String> fileHeader = fileContents.getHeader();
+        List<FileRecord> fileRecords = fileContents.getData();
+
+        /* Switch Type */
         switch (operationType) {
             /* Column Rename Operation */
             case RENAME:
@@ -231,12 +237,12 @@ public class UkubukaTransformer implements UkubukaOperations {
 
             /* Column Add Operation */
             case ADD:
-                doAdd(fileHeader, fileRecords, source, target);
+                doAdd(fileContents, source, target);
                 break;
 
             /* Column Add Operation */
             case NEW:
-                doAdd(fileHeader, fileRecords, source, target);
+                doAdd(fileContents, source, target);
                 break;
 
             /* Column Move Operation */
@@ -251,12 +257,37 @@ public class UkubukaTransformer implements UkubukaOperations {
 
             /* Column Include Operation */
             case INCLUDE:
-                doInclude(fileHeader, fileRecords, target);
+                doInclude(fileContents, target);
                 break;
 
             /* Column Exclude Operation */
             case EXCLUDE:
-                doExclude(fileHeader, fileRecords, target);
+                doExclude(fileContents, target);
+                break;
+
+            /* Column Sum Operation */
+            case SUM:
+                doSum(fileContents, source, target);
+                break;
+
+            /* Column Average Operation */
+            case AVG:
+                doAverage(fileContents, source, target);
+                break;
+
+            /* Column Minimum Operation */
+            case MIN:
+                doMin(fileContents, source, target);
+                break;
+
+            /* Column Maximum Operation */
+            case MAX:
+                doMax(fileContents, source, target);
+                break;
+
+            /* Column Count Operation */
+            case COUNT:
+                doCount(fileContents, source, target);
                 break;
 
             /* Unsupported Operation */
@@ -264,6 +295,149 @@ public class UkubukaTransformer implements UkubukaOperations {
                 throw new TransformException(
                         "Unsupported Operation: " + operationType);
         }
+    }
+
+    /**
+     * Perform Sum Operation
+     * 
+     * @param fileContents
+     * @param source
+     * @param target
+     */
+    private void doSum(FileContents fileContents, final String source,
+            final String target) {
+        LOGGER.info("Performing Sum Operation - Source: {} | Target: {}",
+                source, target);
+
+        /* Add Source */
+        fileContents.getAggregations().put(source,
+                calculateSum(fileContents, target));
+    }
+
+    /**
+     * Perform Count Operation
+     * 
+     * @param fileContents
+     * @param source
+     * @param target
+     */
+    private void doCount(FileContents fileContents, final String source,
+            final String target) {
+        LOGGER.info("Performing Count Operation - Source: {} | Target: {}",
+                source, target);
+
+        /* Add Source */
+        fileContents.getAggregations().put(source,
+                new BigDecimal(fileContents.getData().size()));
+    }
+
+    /**
+     * Perform Average Operation
+     * 
+     * @param fileContents
+     * @param source
+     * @param target
+     */
+    private void doAverage(FileContents fileContents, final String source,
+            final String target) {
+        LOGGER.info("Performing Average Operation - Source: {} | Target: {}",
+                source, target);
+
+        /* Add Source */
+        fileContents.getAggregations().put(source,
+                calculateSum(fileContents, target)
+                        .divide(new BigDecimal(fileContents.getData().size())));
+    }
+
+    /**
+     * Perform Minimum Operation
+     * 
+     * @param fileContents
+     * @param source
+     * @param target
+     */
+    private void doMin(FileContents fileContents, final String source,
+            final String target) {
+        LOGGER.info("Performing Minimum Operation - Source: {} | Target: {}",
+                source, target);
+
+        /* Add Source */
+        fileContents.getAggregations().put(source,
+                calculateMin(fileContents, target));
+    }
+
+    /**
+     * Perform Maximum Operation
+     * 
+     * @param fileContents
+     * @param source
+     * @param target
+     */
+    private void doMax(FileContents fileContents, final String source,
+            final String target) {
+        LOGGER.info("Performing Maximum Operation - Source: {} | Target: {}",
+                source, target);
+
+        /* Add Source */
+        fileContents.getAggregations().put(source,
+                calculateMax(fileContents, target));
+    }
+
+    /**
+     * Calculate Minimum
+     * 
+     * @param fileContents
+     * @param target
+     * @return sumValue
+     */
+    private BigDecimal calculateMin(FileContents fileContents,
+            final String target) {
+        /* Calculate Minimum Column Value */
+        BigDecimal minValue = BigDecimal.valueOf(Double.MAX_VALUE);
+        for (final FileRecord fileRecord : fileContents.getData()) {
+            BigDecimal expressionValue = new BigDecimal(String.valueOf(
+                    evaluateExpression(fileContents, fileRecord, target)));
+            minValue = minValue.min(expressionValue);
+        }
+        return minValue;
+    }
+
+    /**
+     * Calculate Maximum
+     * 
+     * @param fileContents
+     * @param target
+     * @return sumValue
+     */
+    private BigDecimal calculateMax(FileContents fileContents,
+            final String target) {
+        /* Calculate Maximum Column Value */
+        BigDecimal maxValue = BigDecimal.valueOf(Double.MIN_VALUE);
+        for (final FileRecord fileRecord : fileContents.getData()) {
+            BigDecimal expressionValue = new BigDecimal(String.valueOf(
+                    evaluateExpression(fileContents, fileRecord, target)));
+            maxValue = maxValue.max(expressionValue);
+        }
+        return maxValue;
+    }
+
+    /**
+     * Calculate Sum
+     * 
+     * @param fileContents
+     * @param target
+     * @return sumValue
+     */
+    private BigDecimal calculateSum(FileContents fileContents,
+            final String target) {
+        /* Sum Column Values */
+        BigDecimal sumValue = new BigDecimal(0);
+        for (final FileRecord fileRecord : fileContents.getData()) {
+            BigDecimal expressionValue = new BigDecimal(String.valueOf(
+                    evaluateExpression(fileContents, fileRecord, target)));
+            sumValue = sumValue.add(expressionValue);
+        }
+        return sumValue;
     }
 
     /**
@@ -310,13 +484,14 @@ public class UkubukaTransformer implements UkubukaOperations {
     /**
      * Perform Add Operation
      * 
-     * @param fileHeader
+     * @param fileContents
      * @param source
      * @param target
-     * @param fileRecords
      */
-    private void doAdd(List<String> fileHeader, List<FileRecord> fileRecords,
-            final String source, final String target) {
+    private void doAdd(FileContents fileContents, final String source,
+            final String target) {
+        List<String> fileHeader = fileContents.getHeader();
+        List<FileRecord> fileRecords = fileContents.getData();
         LOGGER.info(
                 "Performing Add Operation - Source: {} | Target: {} | Header: {}",
                 source, target, fileHeader);
@@ -328,7 +503,8 @@ public class UkubukaTransformer implements UkubukaOperations {
         for (int index = 0; index < fileRecords.size(); index++) {
             FileRecord fileRecord = fileRecords.get(index);
             fileRecord.setIndex(index);
-            Object expressionValue = evaluateExpression(fileRecord, target);
+            Object expressionValue = evaluateExpression(fileContents,
+                    fileRecord, target);
             fileRecord.getData().add(expressionValue);
         }
     }
@@ -408,48 +584,43 @@ public class UkubukaTransformer implements UkubukaOperations {
     /**
      * Perform Include Operation
      * 
-     * @param fileHeader
-     * @param source
+     * @param fileContetns
      * @param target
-     * @param fileRecords
      */
-    private void doInclude(List<String> fileHeader,
-            List<FileRecord> fileRecords, final String target) {
+    private void doInclude(FileContents fileContetns, final String target) {
         LOGGER.info("Performing Include Operation -  Target: {} | Header: {}",
-                target, fileHeader);
-        excludeRow(fileRecords, target, false);
+                target, fileContetns.getHeader());
+        excludeRow(fileContetns, target, false);
     }
 
     /**
      * Perform Exclude Operation
      * 
-     * @param fileHeader
-     * @param source
+     * @param fileContetns
      * @param target
-     * @param fileRecords
      */
-    private void doExclude(List<String> fileHeader,
-            List<FileRecord> fileRecords, final String target) {
+    private void doExclude(FileContents fileContetns, final String target) {
         LOGGER.info("Performing Exclude Operation -  Target: {} | Header: {}",
-                target, fileHeader);
-        excludeRow(fileRecords, target, true);
+                target, fileContetns.getHeader());
+        excludeRow(fileContetns, target, true);
     }
 
     /**
      * Exclude Row
      * 
-     * @param fileRecords
+     * @param fileContents
      * @param target
      * @param isExclude
      */
-    private void excludeRow(List<FileRecord> fileRecords, final String target,
+    private void excludeRow(FileContents fileContents, final String target,
             final boolean isExclude) {
         /* Iterate Rows */
-        Iterator<FileRecord> fileRecordsIterator = fileRecords.iterator();
+        Iterator<FileRecord> fileRecordsIterator = fileContents.getData()
+                .iterator();
         while (fileRecordsIterator.hasNext()) {
             FileRecord fileRecord = fileRecordsIterator.next();
-            boolean expressionValue = (boolean) evaluateExpression(fileRecord,
-                    target);
+            boolean expressionValue = (boolean) evaluateExpression(fileContents,
+                    fileRecord, target);
             if ((isExclude && expressionValue)
                     || !(isExclude || expressionValue)) {
                 fileRecordsIterator.remove();
@@ -460,14 +631,14 @@ public class UkubukaTransformer implements UkubukaOperations {
     /**
      * Evaluate Expression
      * 
-     * @param fileRecord
+     * @param fileContents
      * @param target
      * @return Evaluated Expression
      */
-    private Object evaluateExpression(final FileRecord fileRecord,
-            final String target) {
-        Object expressionValue = expressionEvaluator.evaluate(fileRecord,
-                CollectionUtils.isEmpty(sMap) ? target
+    private Object evaluateExpression(final FileContents fileContents,
+            final FileRecord fileRecord, final String target) {
+        Object expressionValue = expressionEvaluator.evaluate(fileContents,
+                fileRecord, CollectionUtils.isEmpty(sMap) ? target
                         : getOriginalTarget(target));
         LOGGER.info("Evaluated Expression Value: {}", expressionValue);
         return expressionValue;
