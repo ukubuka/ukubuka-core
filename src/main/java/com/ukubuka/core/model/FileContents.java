@@ -1,6 +1,8 @@
 package com.ukubuka.core.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * File Contents
@@ -12,6 +14,21 @@ public class FileContents {
 
     private List<String> header;
     private List<FileRecord> data;
+    private Map<String, Object> aggregations = new HashMap<>();
+
+    /**
+     * @return the aggregations
+     */
+    public Map<String, Object> getAggregations() {
+        return aggregations;
+    }
+
+    /**
+     * @param aggregations the aggregations to set
+     */
+    public void setAggregations(Map<String, Object> aggregations) {
+        this.aggregations = aggregations;
+    }
 
     /***************************** Default Constructor ****************************/
     public FileContents() {

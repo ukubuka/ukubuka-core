@@ -2,7 +2,6 @@ package com.ukubuka.core.operations.load;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -13,11 +12,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.LoadOperation;
 import com.ukubuka.core.model.SupportedFileType;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Load;
 import com.ukubuka.core.model.UkubukaSchema.LoadOperations;
 import com.ukubuka.core.writer.UkubukaWriter;
@@ -45,7 +46,8 @@ public class UkubukaLoaderTest {
 
     /******************************** Test(s) ********************************/
     @Test
-    public void test_performOperations_csv_success() throws WriterException {
+    public void test_performOperations_csv_success()
+            throws PipelineException, WriterException {
         Mockito.doNothing().when(writer).writeFile(Mockito.anyString(),
                 Mockito.anyString());
 
@@ -69,14 +71,15 @@ public class UkubukaLoaderTest {
         load.setType(SupportedFileType.CSV);
         load.setOperations(loadOperations);
 
-        List<Load> loads = Arrays.asList(load);
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setLoads(Arrays.asList(load));
 
-        ukubukaLoader.performOperations(dataFiles, loads);
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
     public void test_performOperations_csv_distinct_success()
-            throws WriterException {
+            throws PipelineException, WriterException {
         Mockito.doNothing().when(writer).writeFile(Mockito.anyString(),
                 Mockito.anyString());
 
@@ -101,13 +104,15 @@ public class UkubukaLoaderTest {
         load.setType(SupportedFileType.CSV);
         load.setOperations(loadOperations);
 
-        List<Load> loads = Arrays.asList(load);
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setLoads(Arrays.asList(load));
 
-        ukubukaLoader.performOperations(dataFiles, loads);
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
-    public void test_performOperations_json_success() throws WriterException {
+    public void test_performOperations_json_success()
+            throws PipelineException, WriterException {
         Mockito.doNothing().when(writer).writeFile(Mockito.anyString(),
                 Mockito.anyString());
 
@@ -132,14 +137,15 @@ public class UkubukaLoaderTest {
         load.setType(SupportedFileType.JSON);
         load.setOperations(loadOperations);
 
-        List<Load> loads = Arrays.asList(load);
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setLoads(Arrays.asList(load));
 
-        ukubukaLoader.performOperations(dataFiles, loads);
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
     }
 
-    @Test(expected = WriterException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_unsupported_operation_failure()
-            throws WriterException {
+            throws PipelineException, WriterException {
         Mockito.doNothing().when(writer).writeFile(Mockito.anyString(),
                 Mockito.anyString());
 
@@ -164,13 +170,15 @@ public class UkubukaLoaderTest {
         load.setType(SupportedFileType.XML);
         load.setOperations(loadOperations);
 
-        List<Load> loads = Arrays.asList(load);
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setLoads(Arrays.asList(load));
 
-        ukubukaLoader.performOperations(dataFiles, loads);
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
     }
 
-    @Test(expected = WriterException.class)
-    public void test_performOperations_writer_failure() throws WriterException {
+    @Test(expected = PipelineException.class)
+    public void test_performOperations_writer_failure()
+            throws PipelineException, WriterException {
         Mockito.doThrow(new WriterException("foo")).when(writer)
                 .writeFile(Mockito.anyString(), Mockito.anyString());
 
@@ -195,8 +203,9 @@ public class UkubukaLoaderTest {
         load.setType(SupportedFileType.XML);
         load.setOperations(loadOperations);
 
-        List<Load> loads = Arrays.asList(load);
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setLoads(Arrays.asList(load));
 
-        ukubukaLoader.performOperations(dataFiles, loads);
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
     }
 }

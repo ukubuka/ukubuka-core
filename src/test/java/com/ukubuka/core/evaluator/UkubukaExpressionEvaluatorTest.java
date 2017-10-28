@@ -12,6 +12,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.ParseException;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 
 /**
@@ -43,17 +44,17 @@ public class UkubukaExpressionEvaluatorTest {
     public void test_evaluate_success() {
         Mockito.when(expressionParser.parseExpression(Mockito.anyString()))
                 .thenReturn(expression);
-        Mockito.when(
-                expression.getValue(Mockito
-                        .any(StandardEvaluationContext.class))).thenReturn(
-                new Object());
+        Mockito.when(expression
+                .getValue(Mockito.any(StandardEvaluationContext.class)))
+                .thenReturn(new Object());
 
-        ukubukaExpressionEvaluator.evaluate(new FileRecord(), "fooBar");
+        ukubukaExpressionEvaluator.evaluate(new FileContents(),
+                new FileRecord(), "fooBar");
 
-        Mockito.verify(expressionParser, Mockito.times(1)).parseExpression(
-                Mockito.anyString());
-        Mockito.verify(expression, Mockito.times(1)).getValue(
-                Mockito.any(StandardEvaluationContext.class));
+        Mockito.verify(expressionParser, Mockito.times(1))
+                .parseExpression(Mockito.anyString());
+        Mockito.verify(expression, Mockito.times(1))
+                .getValue(Mockito.any(StandardEvaluationContext.class));
     }
 
     @Test(expected = ParseException.class)
@@ -61,18 +62,19 @@ public class UkubukaExpressionEvaluatorTest {
         Mockito.when(expressionParser.parseExpression(Mockito.anyString()))
                 .thenThrow(new ParseException(0, "foo"));
 
-        ukubukaExpressionEvaluator.evaluate(new FileRecord(), "fooBar");
+        ukubukaExpressionEvaluator.evaluate(new FileContents(),
+                new FileRecord(), "fooBar");
     }
 
     @Test(expected = EvaluationException.class)
     public void test_evaluate_evaluation_exception() {
         Mockito.when(expressionParser.parseExpression(Mockito.anyString()))
                 .thenReturn(expression);
-        Mockito.when(
-                expression.getValue(Mockito
-                        .any(StandardEvaluationContext.class))).thenThrow(
-                new EvaluationException("bar"));
+        Mockito.when(expression
+                .getValue(Mockito.any(StandardEvaluationContext.class)))
+                .thenThrow(new EvaluationException("bar"));
 
-        ukubukaExpressionEvaluator.evaluate(new FileRecord(), "fooBar");
+        ukubukaExpressionEvaluator.evaluate(new FileContents(),
+                new FileRecord(), "fooBar");
     }
 }
