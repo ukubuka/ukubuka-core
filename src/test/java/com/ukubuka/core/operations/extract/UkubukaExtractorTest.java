@@ -11,8 +11,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.SupportedFileType;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Extract;
 import com.ukubuka.core.parser.UkubukaParser;
 
@@ -42,7 +44,8 @@ public class UkubukaExtractorTest {
 
     /******************************** Test(s) ********************************/
     @Test
-    public void test_performOperations_csv_success() throws ParserException {
+    public void test_performOperations_csv_success()
+            throws PipelineException, ParserException {
         Mockito.when(delimitedFileParser.parseFile(Mockito.anyString(),
                 Mockito.anyMapOf(String.class, Object.class)))
                 .thenReturn(new FileContents());
@@ -52,8 +55,10 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.CSV);
 
-        ukubukaExtractor.performOperations(new HashMap<>(),
-                Arrays.asList(extracts));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setExtracts(Arrays.asList(extracts));
+
+        ukubukaExtractor.performOperations(new HashMap<>(), ukubukaSchema);
 
         Mockito.verify(delimitedFileParser, Mockito.times(1)).parseFile(
                 Mockito.anyString(),
@@ -61,7 +66,8 @@ public class UkubukaExtractorTest {
     }
 
     @Test
-    public void test_performOperations_xml_success() throws ParserException {
+    public void test_performOperations_xml_success()
+            throws PipelineException, ParserException {
         Mockito.when(xmlParser.parseFile(Mockito.anyString(),
                 Mockito.anyMapOf(String.class, Object.class)))
                 .thenReturn(new FileContents());
@@ -71,17 +77,19 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.XML);
 
-        ukubukaExtractor.performOperations(new HashMap<>(),
-                Arrays.asList(extracts));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setExtracts(Arrays.asList(extracts));
+
+        ukubukaExtractor.performOperations(new HashMap<>(), ukubukaSchema);
 
         Mockito.verify(xmlParser, Mockito.times(1)).parseFile(
                 Mockito.anyString(),
                 Mockito.anyMapOf(String.class, Object.class));
     }
 
-    @Test(expected = ParserException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_unsupported_operation_failure()
-            throws ParserException {
+            throws PipelineException, ParserException {
         Mockito.when(delimitedFileParser.parseFile(Mockito.anyString(),
                 Mockito.anyMapOf(String.class, Object.class)))
                 .thenReturn(new FileContents());
@@ -91,12 +99,15 @@ public class UkubukaExtractorTest {
         extracts.setLocation("");
         extracts.setType(SupportedFileType.JSON);
 
-        ukubukaExtractor.performOperations(new HashMap<>(),
-                Arrays.asList(extracts));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setExtracts(Arrays.asList(extracts));
+
+        ukubukaExtractor.performOperations(new HashMap<>(), ukubukaSchema);
     }
 
     @Test(expected = NullPointerException.class)
-    public void test_performOperations_null_failure() throws ParserException {
+    public void test_performOperations_null_failure()
+            throws PipelineException, ParserException {
         Mockito.when(delimitedFileParser.parseFile(Mockito.anyString(),
                 Mockito.anyMapOf(String.class, Object.class)))
                 .thenReturn(new FileContents());
@@ -105,7 +116,9 @@ public class UkubukaExtractorTest {
         extracts.setId("foo");
         extracts.setLocation("");
 
-        ukubukaExtractor.performOperations(new HashMap<>(),
-                Arrays.asList(extracts));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setExtracts(Arrays.asList(extracts));
+
+        ukubukaExtractor.performOperations(new HashMap<>(), ukubukaSchema);
     }
 }

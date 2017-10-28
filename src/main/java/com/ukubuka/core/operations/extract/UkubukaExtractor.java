@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.model.FileContents;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Extract;
+import com.ukubuka.core.operations.UkubukaOperations;
 import com.ukubuka.core.parser.UkubukaParser;
 
 /**
@@ -20,8 +23,8 @@ import com.ukubuka.core.parser.UkubukaParser;
  * @author agrawroh
  * @version v1.0
  */
-@Component
-public class UkubukaExtractor {
+@Component("UkubukaExtractor")
+public class UkubukaExtractor implements UkubukaOperations {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
@@ -37,13 +40,29 @@ public class UkubukaExtractor {
     private UkubukaParser delimitedFileParser;
 
     /**
-     * Perform Extracts
+     * Perform Operations
      * 
-     * @param extracts
      * @param dataFiles
-     * @throws ParserException
+     * @param schema
+     * @throws PipelineException
      */
     public void performOperations(Map<String, FileContents> dataFiles,
+            final UkubukaSchema schema) throws PipelineException {
+        try {
+            performOperations(dataFiles, schema.getExtracts());
+        } catch (ParserException ex) {
+            throw new PipelineException(ex);
+        }
+    }
+
+    /**
+     * Perform Extracts
+     * 
+     * @param dataFiles
+     * @param extracts
+     * @throws ParserException
+     */
+    private void performOperations(Map<String, FileContents> dataFiles,
             final List<Extract> extracts) throws ParserException {
         /* Iterate Extracts */
         for (final Extract extract : extracts) {

@@ -18,15 +18,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperationsType;
+import com.ukubuka.core.operations.UkubukaOperations;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -39,8 +42,8 @@ import com.ukubuka.core.utilities.Constants;
  * @author agrawroh
  * @version v1.1
  */
-@Component
-public class UkubukaTransformer {
+@Component("UkubukaTransformer")
+public class UkubukaTransformer implements UkubukaOperations {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
@@ -86,13 +89,29 @@ public class UkubukaTransformer {
     }
 
     /**
+     * Perform Operations
+     * 
+     * @param dataFiles
+     * @param schema
+     * @throws PipelineException
+     */
+    public void performOperations(Map<String, FileContents> dataFiles,
+            final UkubukaSchema schema) throws PipelineException {
+        try {
+            performOperations(dataFiles, schema.getTransforms());
+        } catch (TransformException ex) {
+            throw new PipelineException(ex);
+        }
+    }
+
+    /**
      * Perform Transformations
      * 
      * @param dataFiles
      * @param transforms
      * @throws TransformException
      */
-    public void performOperations(Map<String, FileContents> dataFiles,
+    private void performOperations(Map<String, FileContents> dataFiles,
             final List<Transform> transforms) throws TransformException {
         /* Get File Transformation */
         for (final Entry<String, FileContents> dataFile : dataFiles
