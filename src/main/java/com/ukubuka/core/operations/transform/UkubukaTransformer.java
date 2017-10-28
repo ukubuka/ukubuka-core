@@ -345,8 +345,10 @@ public class UkubukaTransformer implements UkubukaOperations {
 
         /* Add Source */
         fileContents.getAggregations().put(source,
-                calculateSum(fileContents, target)
-                        .divide(new BigDecimal(fileContents.getData().size())));
+                calculateSum(fileContents, target).divide(
+                        new BigDecimal(fileContents.getData().size()),
+                        Constants.DIVISION_OPERATION_PRECISION,
+                        Constants.DIVISION_OPERATION_ROUNDING));
     }
 
     /**
