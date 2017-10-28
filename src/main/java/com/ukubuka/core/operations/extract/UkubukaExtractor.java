@@ -1,6 +1,5 @@
 package com.ukubuka.core.operations.extract;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,41 +37,38 @@ public class UkubukaExtractor {
     private UkubukaParser delimitedFileParser;
 
     /**
-     * Perform Operation
+     * Perform Extracts
+     * 
      * @param extracts
+     * @param dataFiles
      * @throws ParserException
      */
-    public Map<String, FileContents> performOperations(
+    public void performOperations(Map<String, FileContents> dataFiles,
             final List<Extract> extracts) throws ParserException {
-        Map<String, FileContents> dataFiles = new HashMap<>();
-
         /* Iterate Extracts */
         for (final Extract extract : extracts) {
-            LOGGER.info("Performing Extract: HC" + extract.hashCode());
-            FileContents fileContents = null;
+            LOGGER.info("Performing Extract: HC{}", extract.hashCode());
+            FileContents fileContents;
 
             /* Get File Type */
             switch (extract.getType()) {
-            /* Delimited File */
-            case CSV:
-                fileContents = delimitedFileParser
-                        .parseFile(extract.getLocation(), extract.getFlags());
-                break;
-            /* XML File */
-            case XML:
-                fileContents = xmlParser.parseFile(extract.getLocation(),
-                        extract.getFlags());
-                break;
-            /* Unsupported File */
-            default:
-                throw new ParserException("File Type Not Supported!");
+                /* Delimited File */
+                case CSV:
+                    fileContents = delimitedFileParser.parseFile(
+                            extract.getLocation(), extract.getFlags());
+                    break;
+                /* XML File */
+                case XML:
+                    fileContents = xmlParser.parseFile(extract.getLocation(),
+                            extract.getFlags());
+                    break;
+                /* Unsupported File */
+                default:
+                    throw new ParserException("File Type Not Supported!");
             }
 
             /* Store DataSet */
             dataFiles.put(extract.getId(), fileContents);
         }
-
-        /* Return DataFiles */
-        return dataFiles;
     }
 }

@@ -1,6 +1,10 @@
 package com.ukubuka.core.writer;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 
 import org.json.CDL;
@@ -42,7 +46,7 @@ public class UkubukaWriter {
      */
     public JSONArray writeJSON(List<String> fileHeader,
             List<FileRecord> fileRecords) {
-        LOGGER.info("Writing JSON: #" + fileRecords.size() + " Records");
+        LOGGER.info("Writing JSON: #{} Records", fileRecords.size());
 
         /* Convert To JSON */
         return CDL.toJSONArray(knitFile(fileHeader, fileRecords));
@@ -57,7 +61,7 @@ public class UkubukaWriter {
      */
     public String writeCSV(List<String> fileHeader,
             List<FileRecord> fileRecords) {
-        LOGGER.info("Writing CSV: #" + fileRecords.size() + " Records");
+        LOGGER.info("Writing CSV: #{} Records", fileRecords.size());
 
         /* Convert To CSV */
         return knitFile(fileHeader, fileRecords);
@@ -94,8 +98,8 @@ public class UkubukaWriter {
 
         /* Vomit String */
         String outputFileContent = fileContents.toString();
-        LOGGER.info(
-                "Output Content Bytes: " + outputFileContent.getBytes().length);
+        LOGGER.info("Output Content Bytes: {}",
+                outputFileContent.getBytes().length);
         return outputFileContent;
     }
 
@@ -114,5 +118,32 @@ public class UkubukaWriter {
         } catch (IOException ex) {
             throw new WriterException(ex);
         }
+    }
+
+    /**
+     * Write File
+     * 
+     * @param completeFileName
+     * @param fileContents
+     * @throws WriterException
+     */
+    public void writeFile(final String completeFileName,
+            final String fileContents) throws WriterException {
+        try {
+            writeFile(new FileWriter(new File(completeFileName)), fileContents);
+        } catch (IOException ex) {
+            throw new WriterException(ex);
+        }
+    }
+
+    /**
+     * Write File
+     * @param writer
+     * @param fileContents
+     */
+    public void writeFile(final Writer writer, final String fileContents) {
+        PrintWriter printWriter = new PrintWriter(writer);
+        printWriter.print(fileContents);
+        printWriter.close();
     }
 }

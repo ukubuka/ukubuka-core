@@ -2,6 +2,8 @@ package com.ukubuka.core.parser.impl;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
@@ -17,10 +19,18 @@ import com.ukubuka.core.parser.UkubukaParser;
 @Component("UkubukaXMLParser")
 public class UkubukaXMLParser implements UkubukaParser {
 
+    /************************************ Logger Instance ***********************************/
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UkubukaDFileParser.class);
+
+    /**
+     * Parse File
+     */
     @Override
-    public FileContents parseFile(String completeFileName,
+    public FileContents parseFile(final String completeFileName,
             Map<String, Object> flags) throws ParserException {
-        // TODO Auto-generated method stub
+        LOGGER.info("Parsing XML File - Location: {} | Flags: {}",
+                completeFileName, flags);
         return null;
     }
 

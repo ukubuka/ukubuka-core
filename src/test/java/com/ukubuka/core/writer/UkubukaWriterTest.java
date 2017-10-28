@@ -3,6 +3,7 @@ package com.ukubuka.core.writer;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -103,5 +104,20 @@ public class UkubukaWriterTest {
                 .asList(new FileRecord(Arrays.asList("bar", "foo")));
         String csvFile = ukubukaWriter.writeCSV(fileHeader, fileRecords);
         assertEquals(16, csvFile.length());
+    }
+
+    @Test(expected = WriterException.class)
+    public void test_writeFile_failure() throws WriterException {
+        ukubukaWriter.writeFile("", "fooBar");
+    }
+
+    @Test
+    public void test_writeFile_file_success() throws WriterException {
+        ukubukaWriter.writeFile("foo", "fooBar");
+    }
+
+    @Test
+    public void test_writeFile_writer_success() {
+        ukubukaWriter.writeFile(new StringWriter(), "fooBar");
     }
 }

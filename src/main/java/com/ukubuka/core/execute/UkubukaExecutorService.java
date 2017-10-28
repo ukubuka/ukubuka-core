@@ -1,5 +1,6 @@
 package com.ukubuka.core.execute;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class UkubukaExecutorService {
     public void execute(final String ukubukaSchemaFile)
             throws ParserException, TransformException, WriterException {
         /* Create An In-Memory Data Store */
-        Map<String, FileContents> dataFiles;
+        Map<String, FileContents> dataFiles = new HashMap<>();
 
         /* Read File*/
         LOGGER.info("Reading Ukubuka Schema...");
@@ -63,17 +64,16 @@ public class UkubukaExecutorService {
 
         /* Perform Extracts */
         LOGGER.info("Performing Extract(s)...");
-        dataFiles = ukubukaExtractor
-                .performOperations(ukubukaSchema.getExtracts());
+        ukubukaExtractor.performOperations(dataFiles,
+                ukubukaSchema.getExtracts());
 
         /* Perform Transformations */
         LOGGER.info("Performing Transformation(s)...");
-        dataFiles = ukubukaTransformer.performOperations(dataFiles,
+        ukubukaTransformer.performOperations(dataFiles,
                 ukubukaSchema.getTransforms());
 
         /* Perform Load */
         LOGGER.info("Performing Load(s)...");
-        dataFiles = ukubukaLoader.performOperations(dataFiles,
-                ukubukaSchema.getLoads());
+        ukubukaLoader.performOperations(dataFiles, ukubukaSchema.getLoads());
     }
 }

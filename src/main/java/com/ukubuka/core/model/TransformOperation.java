@@ -13,12 +13,13 @@ import com.ukubuka.core.exception.TransformException;
 public enum TransformOperation {
 
     RENAME("rename"), DELETE("delete"), REMOVE("remove"), ADD("add"), NEW(
-            "new"), MOVE("move"), SWAP("swap"), NONE("no-operation");
+            "new"), MOVE("move"), SWAP("swap"), INCLUDE(
+                    "include"), EXCLUDE("exclude"), NONE("no-operation");
 
     /* Operation */
     private String operation;
 
-    /********** Private Constructor **********/
+    /************** Private Constructor ***************/
     private TransformOperation(final String operation) {
         this.operation = operation;
     }

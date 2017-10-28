@@ -1,9 +1,13 @@
 package com.ukubuka.core.operations.transform;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +26,7 @@ import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
+import com.ukubuka.core.model.UkubukaSchema.TransformOperationsType;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -43,6 +48,9 @@ public class UkubukaTransformer {
 
     /************************************ Global Variables **********************************/
     private Map<String, String> sMap;
+    private static final EnumSet<TransformOperation> TRANSFORM_OPERATION_EXCEPTIONS = EnumSet
+            .of(TransformOperation.ADD, TransformOperation.NEW,
+                    TransformOperation.INCLUDE, TransformOperation.EXCLUDE);
 
     /******************************** Dependency Injections *********************************/
     @Autowired
@@ -80,26 +88,48 @@ public class UkubukaTransformer {
     /**
      * Perform Transformations
      * 
-     * @param fileId
+     * @param dataFiles
      * @param transforms
-     * @param fileContents
-     * @return 
      * @throws TransformException
      */
-    public Map<String, FileContents> performOperations(
-            Map<String, FileContents> dataFiles,
+    public void performOperations(Map<String, FileContents> dataFiles,
             final List<Transform> transforms) throws TransformException {
         /* Get File Transformation */
-        for (final String key : dataFiles.keySet()) {
-            List<TransformOperations> fileTransforms = getFileTransformationDetails(
-                    key, transforms);
-            if (!CollectionUtils.isEmpty(fileTransforms)) {
-                LOGGER.info("Transform Count: #" + fileTransforms.size());
-                performTransformOperations(dataFiles.get(key).getHeader(),
-                        dataFiles.get(key).getData(), fileTransforms);
+        for (final Entry<String, FileContents> dataFile : dataFiles
+                .entrySet()) {
+            TransformOperationsType fileTransforms = getFileTransformationDetails(
+                    dataFile.getKey(), transforms);
+
+            /* Process File Transforms */
+            if (null != fileTransforms) {
+                /* Perform Column Operations */
+                performTypeOperations(dataFile.getValue(),
+                        fileTransforms.getColumn());
+
+                /* Perform Row Operations */
+                if (null != fileTransforms.getRow()) {
+                    performTypeOperations(dataFile.getValue(),
+                            Arrays.asList(fileTransforms.getRow()));
+                }
             }
         }
-        return dataFiles;
+    }
+
+    /**
+     * Perform Type Operations
+     * 
+     * @param fileContents
+     * @param transformOperations
+     * @throws TransformException
+     */
+    private void performTypeOperations(FileContents fileContents,
+            final List<TransformOperations> transformOperations)
+            throws TransformException {
+        if (!CollectionUtils.isEmpty(transformOperations)) {
+            LOGGER.info("Transform Count: #{}", transformOperations.size());
+            performTransformOperations(fileContents.getHeader(),
+                    fileContents.getData(), transformOperations);
+        }
     }
 
     /**
@@ -107,9 +137,9 @@ public class UkubukaTransformer {
      * 
      * @param fileId
      * @param transforms
-     * @return File Transforms
+     * @return Transform Operations Type
      */
-    private List<TransformOperations> getFileTransformationDetails(
+    private TransformOperationsType getFileTransformationDetails(
             final String fileId, List<Transform> transforms) {
         /* Iterate Transforms */
         for (final Transform transform : transforms) {
@@ -134,12 +164,11 @@ public class UkubukaTransformer {
             throws TransformException {
         /* Iterate Operations */
         for (final TransformOperations operation : operationsList) {
-            LOGGER.info("Performing Transform: HC" + operation.hashCode());
+            LOGGER.info("Performing Transform: HC{}", operation.hashCode());
 
             /* Check Whether Column Exists */
             String source = operation.getSource();
-            if (operation.getType() != TransformOperation.ADD
-                    && operation.getType() != TransformOperation.NEW
+            if (!TRANSFORM_OPERATION_EXCEPTIONS.contains(operation.getType())
                     && !fileHeader.contains(source)) {
                 throw new TransformException("Column Not Found! Name: " + source
                         + " | Header: " + fileHeader);
@@ -166,45 +195,55 @@ public class UkubukaTransformer {
             final TransformOperation operationType, final String source,
             final String target) throws TransformException {
         switch (operationType) {
-        /* Column Rename Operation */
-        case RENAME:
-            doRename(fileHeader, source, target);
-            break;
+            /* Column Rename Operation */
+            case RENAME:
+                doRename(fileHeader, source, target);
+                break;
 
-        /* Column Delete Operation */
-        case DELETE:
-            doDelete(fileHeader, fileRecords, source);
-            break;
+            /* Column Delete Operation */
+            case DELETE:
+                doDelete(fileHeader, fileRecords, source);
+                break;
 
-        /* Column Delete Operation */
-        case REMOVE:
-            doDelete(fileHeader, fileRecords, source);
-            break;
+            /* Column Delete Operation */
+            case REMOVE:
+                doDelete(fileHeader, fileRecords, source);
+                break;
 
-        /* Column Add Operation */
-        case ADD:
-            doAdd(fileHeader, fileRecords, source, target);
-            break;
+            /* Column Add Operation */
+            case ADD:
+                doAdd(fileHeader, fileRecords, source, target);
+                break;
 
-        /* Column Add Operation */
-        case NEW:
-            doAdd(fileHeader, fileRecords, source, target);
-            break;
+            /* Column Add Operation */
+            case NEW:
+                doAdd(fileHeader, fileRecords, source, target);
+                break;
 
-        /* Column Move Operation */
-        case MOVE:
-            doMove(fileHeader, fileRecords, source, target);
-            break;
+            /* Column Move Operation */
+            case MOVE:
+                doMove(fileHeader, fileRecords, source, target);
+                break;
 
-        /* Column Swap Operation */
-        case SWAP:
-            doSwap(fileHeader, fileRecords, source, target);
-            break;
+            /* Column Swap Operation */
+            case SWAP:
+                doSwap(fileHeader, fileRecords, source, target);
+                break;
 
-        /* Unsupported Operation */
-        default:
-            throw new TransformException(
-                    "Unsupported Operation: " + operationType);
+            /* Column Include Operation */
+            case INCLUDE:
+                doInclude(fileHeader, fileRecords, target);
+                break;
+
+            /* Column Exclude Operation */
+            case EXCLUDE:
+                doExclude(fileHeader, fileRecords, target);
+                break;
+
+            /* Unsupported Operation */
+            default:
+                throw new TransformException(
+                        "Unsupported Operation: " + operationType);
         }
     }
 
@@ -217,8 +256,9 @@ public class UkubukaTransformer {
      */
     private void doRename(List<String> fileHeader, final String source,
             final String target) {
-        LOGGER.info("Performing Rename Operation - Source: " + source
-                + " | Target: " + target + " | Header: " + fileHeader);
+        LOGGER.info(
+                "Performing Rename Operation - Source: {} | Target: {} | Header: {}",
+                source, target, fileHeader);
 
         /* Rename New Header */
         fileHeader.set(fileHeader.indexOf(source), target);
@@ -233,8 +273,8 @@ public class UkubukaTransformer {
      */
     private void doDelete(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source) {
-        LOGGER.info("Performing Delete Operation - Source: " + source
-                + " | Header: " + fileHeader);
+        LOGGER.info("Performing Delete Operation - Source: {} | Header: {}",
+                source, fileHeader);
 
         /* Get Index */
         int index = fileHeader.indexOf(source);
@@ -258,8 +298,9 @@ public class UkubukaTransformer {
      */
     private void doAdd(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
-        LOGGER.info("Performing Add Operation - Source: " + source
-                + " | Target: " + target + " | Header: " + fileHeader);
+        LOGGER.info(
+                "Performing Add Operation - Source: {} | Target: {} | Header: {}",
+                source, target, fileHeader);
 
         /* Add Source */
         fileHeader.add(source);
@@ -268,23 +309,22 @@ public class UkubukaTransformer {
         for (int index = 0; index < fileRecords.size(); index++) {
             FileRecord fileRecord = fileRecords.get(index);
             fileRecord.setIndex(index);
-            String expressionValue = String.valueOf(expressionEvaluator
-                    .evaluate(fileRecord, CollectionUtils.isEmpty(sMap) ? target
-                            : getOriginalTarget(target)));
-            LOGGER.info("Evaluated Expression Value: " + expressionValue);
+            Object expressionValue = evaluateExpression(fileRecord, target);
             fileRecord.getData().add(expressionValue);
         }
     }
 
     /**
      * Get Original Target
+     * 
      * @param target
      * @return modifiedTarget
      */
     private String getOriginalTarget(final String target) {
         String modifiedTarget = target;
-        for (final String key : sMap.keySet()) {
-            modifiedTarget = modifiedTarget.replace(key, sMap.get(key));
+        for (final Entry<String, String> shortcutEntry : sMap.entrySet()) {
+            modifiedTarget = modifiedTarget.replace(shortcutEntry.getKey(),
+                    shortcutEntry.getValue());
         }
         return modifiedTarget;
     }
@@ -299,8 +339,9 @@ public class UkubukaTransformer {
      */
     private void doMove(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
-        LOGGER.info("Performing Move Operation - Source: " + source
-                + " | Target: " + target + " | Header: " + fileHeader);
+        LOGGER.info(
+                "Performing Move Operation - Source: {} | Target: {} | Header: {}",
+                source, target, fileHeader);
 
         /* Get Source & Target Indices */
         int sourceIndex = fileHeader.indexOf(source);
@@ -313,7 +354,7 @@ public class UkubukaTransformer {
 
         /* Move Data Column Values */
         for (final FileRecord fileRecord : fileRecords) {
-            String data = fileRecord.getData().remove(sourceIndex);
+            Object data = fileRecord.getData().remove(sourceIndex);
             fileRecord.getData().add(targetIndex, data);
         }
     }
@@ -328,8 +369,9 @@ public class UkubukaTransformer {
      */
     private void doSwap(List<String> fileHeader, List<FileRecord> fileRecords,
             final String source, final String target) {
-        LOGGER.info("Performing Swap Operation - Source: " + source
-                + " | Target: " + target + " | Header: " + fileHeader);
+        LOGGER.info(
+                "Performing Swap Operation - Source: {} | Target: {} | Header: {}",
+                source, target, fileHeader);
 
         /* Get Source & Target Indices */
         int sourceIndex = fileHeader.indexOf(source);
@@ -342,5 +384,73 @@ public class UkubukaTransformer {
         for (final FileRecord fileRecord : fileRecords) {
             Collections.swap(fileRecord.getData(), sourceIndex, targetIndex);
         }
+    }
+
+    /**
+     * Perform Include Operation
+     * 
+     * @param fileHeader
+     * @param source
+     * @param target
+     * @param fileRecords
+     */
+    private void doInclude(List<String> fileHeader,
+            List<FileRecord> fileRecords, final String target) {
+        LOGGER.info("Performing Include Operation -  Target: {} | Header: {}",
+                target, fileHeader);
+        excludeRow(fileRecords, target, false);
+    }
+
+    /**
+     * Perform Exclude Operation
+     * 
+     * @param fileHeader
+     * @param source
+     * @param target
+     * @param fileRecords
+     */
+    private void doExclude(List<String> fileHeader,
+            List<FileRecord> fileRecords, final String target) {
+        LOGGER.info("Performing Exclude Operation -  Target: {} | Header: {}",
+                target, fileHeader);
+        excludeRow(fileRecords, target, true);
+    }
+
+    /**
+     * Exclude Row
+     * 
+     * @param fileRecords
+     * @param target
+     * @param isExclude
+     */
+    private void excludeRow(List<FileRecord> fileRecords, final String target,
+            final boolean isExclude) {
+        /* Iterate Rows */
+        Iterator<FileRecord> fileRecordsIterator = fileRecords.iterator();
+        while (fileRecordsIterator.hasNext()) {
+            FileRecord fileRecord = fileRecordsIterator.next();
+            boolean expressionValue = (boolean) evaluateExpression(fileRecord,
+                    target);
+            if ((isExclude && expressionValue)
+                    || !(isExclude || expressionValue)) {
+                fileRecordsIterator.remove();
+            }
+        }
+    }
+
+    /**
+     * Evaluate Expression
+     * 
+     * @param fileRecord
+     * @param target
+     * @return Evaluated Expression
+     */
+    private Object evaluateExpression(final FileRecord fileRecord,
+            final String target) {
+        Object expressionValue = expressionEvaluator.evaluate(fileRecord,
+                CollectionUtils.isEmpty(sMap) ? target
+                        : getOriginalTarget(target));
+        LOGGER.info("Evaluated Expression Value: {}", expressionValue);
+        return expressionValue;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
@@ -72,7 +73,7 @@ public class UkubukaBaseParser {
 
         /* Set Data */
         List<FileRecord> fileData = new ArrayList<>();
-        while (fileContent.size() > 0) {
+        while (!CollectionUtils.isEmpty(fileContent)) {
             fileData.add(new FileRecord(
                     new ArrayList<>(Arrays.asList(fileContent.remove(0)
                             .split(Constants.DEFAULT_FILE_DELIMITER)))));
@@ -97,7 +98,7 @@ public class UkubukaBaseParser {
         int columnSize = singleLine.length()
                 - singleLine.replaceAll(Constants.DEFAULT_FILE_DELIMITER,
                         Constants.EMPTY_STRING).length();
-        LOGGER.info("Column Count: #" + columnSize);
+        LOGGER.info("Column Count: #{}", columnSize);
 
         /* Stitch Header */
         fileContents.add(0, stitchHeader(1 + columnSize));

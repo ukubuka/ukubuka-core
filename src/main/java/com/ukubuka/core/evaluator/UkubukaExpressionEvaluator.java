@@ -33,7 +33,7 @@ public class UkubukaExpressionEvaluator {
      */
     public Object evaluate(final FileRecord fileRecord,
             final String expression) {
-        LOGGER.info("Evaluating Expression: " + expression);
+        LOGGER.info("Evaluating Expression: {}", expression);
         return expressionParser.parseExpression(expression)
                 .getValue(new StandardEvaluationContext(fileRecord));
     }

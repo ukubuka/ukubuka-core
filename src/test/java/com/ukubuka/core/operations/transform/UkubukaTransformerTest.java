@@ -26,6 +26,7 @@ import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
+import com.ukubuka.core.model.UkubukaSchema.TransformOperationsType;
 import com.ukubuka.core.reader.UkubukaReader;
 
 /**
@@ -72,7 +73,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -103,7 +106,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
 
@@ -138,7 +143,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -169,7 +176,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-Y");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -194,7 +203,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -219,7 +230,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -241,7 +254,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -266,7 +281,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -289,7 +306,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -316,7 +335,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -339,7 +360,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -366,7 +389,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -389,7 +414,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -416,7 +443,10 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        ;
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -438,7 +468,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
@@ -461,7 +493,9 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
         Map<String, FileContents> map = new HashMap<>();
         map.put("foo-X", new FileContents(fileHeader, fileRecords));
         ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
