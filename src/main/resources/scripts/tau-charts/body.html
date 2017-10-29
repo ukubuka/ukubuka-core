@@ -2,8 +2,6 @@
     <script type="text/javascript">
 		var myChart = echarts.init(document.getElementById('main'));
         myChart.showLoading();
-		$.getJSON('output_result.json', function (json) {
-			myChart.hideLoading();
-			myChart.setOption(option = $$$OPTION$$$, true);
-		});
+		myChart.setOption(option = $$$OPTION$$$, true);
+		myChart.hideLoading();
     </script>
