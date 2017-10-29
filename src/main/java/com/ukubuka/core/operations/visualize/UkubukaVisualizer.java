@@ -3,6 +3,7 @@ package com.ukubuka.core.operations.visualize;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,9 +78,11 @@ public class UkubukaVisualizer implements UkubukaOperations {
             LOGGER.info("HTML Content: {}", htmlPageContent);
 
             /* Write File */
-            LOGGER.info("Writing File...");
-            LOGGER.info("Location: {}", visualization.getLocation());
-            writer.writeFile(visualization.getLocation(), htmlPageContent);
+            if (StringUtils.isNotEmpty(visualization.getLocation())) {
+                LOGGER.info("Writing File...");
+                LOGGER.info("Location: {}", visualization.getLocation());
+                writer.writeFile(visualization.getLocation(), htmlPageContent);
+            }
         }
         return dataFiles;
     }
