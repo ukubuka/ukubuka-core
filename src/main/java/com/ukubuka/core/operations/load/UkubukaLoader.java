@@ -98,6 +98,9 @@ public class UkubukaLoader implements UkubukaOperations {
                             : dataFiles.get(fileId).getData());
         }
 
+        /* Save Local Store Copy */
+        dataFiles.put(load.getId(), fileContents);
+
         /* Write File */
         LOGGER.info("Writing File...");
         try {

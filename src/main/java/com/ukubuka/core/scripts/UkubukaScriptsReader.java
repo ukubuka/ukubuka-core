@@ -76,8 +76,8 @@ public class UkubukaScriptsReader {
                                 .append(Constants.CONTENT_TAG)
                                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .append(Constants.OPENING_BRACKET)
-                                .append(file.getName())
                                 .append(Constants.FORWARD_SLASH)
+                                .append(file.getName())
                                 .append(Constants.CLOSING_BRACKET)
                                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .toString()));

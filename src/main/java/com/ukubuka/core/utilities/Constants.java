@@ -39,10 +39,12 @@ public final class Constants {
     public static final String HTML_BODY_TAG = "body.html";
     public static final String SCRIPTS_TAG = "scripts";
     public static final String INCLUDE_TAG = "include";
+    public static final String DATA_TAG = "$$$DATA$$$";
     public static final String HEAD_TAG = "$$$HEAD$$$";
     public static final String BODY_TAG = "$$$BODY$$$";
     public static final String WIDTH_TAG = "$$$WIDTH$$$";
     public static final String HEIGHT_TAG = "$$$HEIGHT$$$";
+    public static final String OPTION_TAG = "$$$OPTION$$$";
 
     /******************************** Private Constructor *********************************/
     private Constants() {
