@@ -1,6 +1,5 @@
 package com.ukubuka.core.operations.visualize;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -9,14 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.ReaderException;
-import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
-import com.ukubuka.core.model.SupportedSource;
-import com.ukubuka.core.model.UkubukaSchema.Load;
-import com.ukubuka.core.reader.UkubukaReader;
+import com.ukubuka.core.model.UkubukaSchema;
+import com.ukubuka.core.model.UkubukaSchema.Visualization;
+import com.ukubuka.core.operations.UkubukaOperations;
+import com.ukubuka.core.scripts.UkubukaScriptsReader;
 import com.ukubuka.core.utilities.Constants;
-import com.ukubuka.core.writer.UkubukaWriter;
 
 /**
  * Ukubuka Visualizer
@@ -24,8 +23,8 @@ import com.ukubuka.core.writer.UkubukaWriter;
  * @author agrawroh
  * @version v1.0
  */
-@Component
-public class UkubukaVisualizer {
+@Component("UkubukaVisualizer")
+public class UkubukaVisualizer implements UkubukaOperations {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
@@ -33,21 +32,22 @@ public class UkubukaVisualizer {
 
     /******************************** Dependency Injections *********************************/
     @Autowired
-    private UkubukaReader reader;
+    private UkubukaScriptsReader scriptsReader;
 
-    @Autowired
-    private UkubukaWriter writer;
-
-    private static String fin = "";
-
-    public static void main(String[] args) throws ReaderException {
-        new UkubukaVisualizer().readScript(UkubukaVisualizer.class
-                .getClassLoader().getResource("scripts/tau-charts/include/css")
-                .getFile());
-        new UkubukaVisualizer().readScript(UkubukaVisualizer.class
-                .getClassLoader().getResource("scripts/tau-charts/include/js")
-                .getFile());
-        System.out.println(fin);
+    /**
+     * Perform Operations
+     * 
+     * @param dataFiles
+     * @param schema
+     * @throws PipelineException
+     */
+    public void performOperations(Map<String, FileContents> dataFiles,
+            final UkubukaSchema schema) throws PipelineException {
+        try {
+            performOperations(dataFiles, schema.getVisualizations());
+        } catch (ReaderException ex) {
+            throw new PipelineException(ex);
+        }
     }
 
     /**
@@ -56,34 +56,28 @@ public class UkubukaVisualizer {
      * @param fileHeader
      * @param operationsList
      * @param fileRecords
-     * @throws WriterException
+     * @throws ReaderException
      */
     public Map<String, FileContents> performOperations(
-            Map<String, FileContents> dataFiles, final List<Load> loads)
-            throws WriterException {
-        return dataFiles;
-    }
-
-    private void readScript(final String completeFileName)
-            throws ReaderException {
-        File f = new File(completeFileName);
-        if (f.exists()) {
-            for (final File fl : f.listFiles()) {
-                if (!fl.isDirectory()) {
-                    fin += ("\n" + "\n" + "\n" + "\n******************"
-                            + processFile(fl.getAbsolutePath()));
-                } else {
-                    readScript(fl.getAbsolutePath());
-                }
-            }
+            Map<String, FileContents> dataFiles,
+            final List<Visualization> visualizations) throws ReaderException {
+        /* Iterate Operations */
+        for (final Visualization visualization : visualizations) {
+            LOGGER.info("Creating Visualization With Hash: HC{}",
+                    visualization.hashCode());
+            String htmlPageContent = scriptsReader
+                    .createHTML(UkubukaVisualizer.class.getClassLoader()
+                            .getResource(Constants.SCRIPTS_TAG
+                                    + Constants.FORWARD_SLASH
+                                    + visualization.getType()
+                                    + Constants.FORWARD_SLASH)
+                            .getFile())
+                    .replace(Constants.WIDTH_TAG,
+                            visualization.getFlags().getWidth())
+                    .replace(Constants.HEIGHT_TAG,
+                            visualization.getFlags().getHeight());
+            LOGGER.info("HTML Content: {}", htmlPageContent);
         }
-
-    }
-
-    private String processFile(final String completeFileName)
-            throws ReaderException {
-        reader = new UkubukaReader();
-        return reader.readFileAsString(SupportedSource.FILE, completeFileName,
-                Constants.DEFAULT_FILE_ENCODING);
+        return dataFiles;
     }
 }

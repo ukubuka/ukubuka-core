@@ -1,8 +1,6 @@
 package com.ukubuka.core.scripts;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.model.SupportedSource;
-import com.ukubuka.core.operations.visualize.UkubukaVisualizer;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -32,28 +29,44 @@ public class UkubukaScriptsReader {
     @Autowired
     private UkubukaReader reader;
 
-    public static void main(String[] args) throws ReaderException {
-        System.out.println(new UkubukaScriptsReader()
-                .readScripts(UkubukaVisualizer.class.getClassLoader()
-                        .getResource("scripts/tau-charts/include").getFile()));
+    /**
+     * Read Scripts
+     * 
+     * @param scriptsDirectoryRoot
+     * @return htmlFileContents
+     * @throws ReaderException
+     */
+    public String createHTML(final String scriptsDirectoryRoot)
+            throws ReaderException {
+        StringBuilder htmlFileBuilder = new StringBuilder();
+        htmlFileBuilder.append(getFileContents(
+                new File(scriptsDirectoryRoot + Constants.BLANK_TEMPLATE_TAG)
+                        .getAbsolutePath()).replace(
+                                Constants.HEAD_TAG,
+                                readScripts(scriptsDirectoryRoot
+                                        + Constants.INCLUDE_TAG))
+                                .replace(Constants.BODY_TAG, getFileContents(
+                                        new File(scriptsDirectoryRoot
+                                                + Constants.HTML_BODY_TAG)
+                                                        .getAbsolutePath())));
+        return htmlFileBuilder.toString();
     }
 
     /**
      * Read Scripts
      * 
      * @param scriptsDirectoryRoot
-     * @return Map<HTMLTag, Scripts>
+     * @return htmlFileContents
      * @throws ReaderException
      */
-    private Map<String, String> readScripts(final String scriptsDirectoryRoot)
+    private String readScripts(final String scriptsDirectoryRoot)
             throws ReaderException {
-        Map<String, String> scriptsMap = new HashMap<>();
+        StringBuilder htmlFileBuilder = new StringBuilder();
         LOGGER.info("Reading Directory: {}", scriptsDirectoryRoot);
         for (final File file : new File(scriptsDirectoryRoot).listFiles()) {
             if (file.isDirectory()) {
                 LOGGER.info("Reading Resource Directory: {}", file.getName());
-                scriptsMap.put(file.getName(), readScript(
-                        file.getAbsolutePath(),
+                htmlFileBuilder.append(readScript(file.getAbsolutePath(),
                         new StringBuilder().append(
                                 Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .append(Constants.OPENING_BRACKET)
@@ -70,7 +83,7 @@ public class UkubukaScriptsReader {
                                 .toString()));
             }
         }
-        return scriptsMap;
+        return htmlFileBuilder.toString();
     }
 
     /**
