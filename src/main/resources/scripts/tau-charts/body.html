@@ -1,0 +1,9 @@
+	<canvas id="main" width="$$$WIDTH$$$" height="$$$HEIGHT$$$"></canvas>
+    <script type="text/javascript">
+		var myChart = echarts.init(document.getElementById('main'));
+        myChart.showLoading();
+		$.getJSON('output_result.json', function (json) {
+			myChart.hideLoading();
+			myChart.setOption(option = $$$OPTION$$$, true);
+		});
+    </script>
