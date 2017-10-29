@@ -72,33 +72,45 @@ public class UkubukaVisualizer implements UkubukaOperations {
         for (final Visualization visualization : visualizations) {
             LOGGER.info("Creating Visualization With Hash: HC{}",
                     visualization.hashCode());
-            FileContents fileContents = dataFiles.get(visualization.getId());
-            String htmlPageContent = scriptsReader
-                    .createHTML(UkubukaVisualizer.class.getClassLoader()
-                            .getResource(Constants.SCRIPTS_TAG
-                                    + Constants.FORWARD_SLASH
-                                    + visualization.getType()
-                                    + Constants.FORWARD_SLASH)
-                            .getFile())
-                    .replace(Constants.WIDTH_TAG,
-                            visualization.getFlags().getWidth())
-                    .replace(Constants.HEIGHT_TAG,
-                            visualization.getFlags().getHeight())
-                    .replace(Constants.OPTION_TAG,
-                            visualization.getFlags().getOptions())
-                    .replace(Constants.DATA_TAG,
-                            writer.prettyPrint(writer
-                                    .writeJSON(fileContents.getHeader(),
-                                            fileContents.getData())
-                                    .toString()));
+            String htmlPageContent = createHTMLPage(visualization,
+                    dataFiles.get(visualization.getId()));
             LOGGER.info("HTML Content: {}", htmlPageContent);
 
             /* Write File */
             LOGGER.info("Writing File...");
-
             LOGGER.info("Location: {}", visualization.getLocation());
             writer.writeFile(visualization.getLocation(), htmlPageContent);
         }
         return dataFiles;
+    }
+
+    /**
+     * Create HTML Page
+     * 
+     * @param visualization
+     * @param fileContents
+     * @return htmlPageContent
+     * @throws ReaderException
+     * @throws WriterException
+     */
+    private String createHTMLPage(final Visualization visualization,
+            final FileContents fileContents)
+            throws ReaderException, WriterException {
+        return scriptsReader.createHTML(UkubukaVisualizer.class.getClassLoader()
+                .getResource(Constants.SCRIPTS_TAG + Constants.FORWARD_SLASH
+                        + visualization.getType() + Constants.FORWARD_SLASH)
+                .getFile())
+                .replace(Constants.WIDTH_TAG,
+                        visualization.getFlags().getWidth())
+                .replace(Constants.HEIGHT_TAG,
+                        visualization.getFlags().getHeight())
+                .replace(Constants.OPTION_TAG,
+                        visualization.getFlags().getOptions())
+                .replace(
+                        Constants.DATA_TAG, writer
+                                .prettyPrint(writer
+                                        .writeJSON(fileContents.getHeader(),
+                                                fileContents.getData())
+                                        .toString()));
     }
 }

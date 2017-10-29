@@ -102,6 +102,18 @@ public class UkubukaLoader implements UkubukaOperations {
         dataFiles.put(load.getId(), fileContents);
 
         /* Write File */
+        writeFile(load, fileContents);
+    }
+
+    /**
+     * Write File
+     * 
+     * @param load
+     * @param fileContents
+     * @throws WriterException
+     */
+    private void writeFile(final Load load, FileContents fileContents)
+            throws WriterException {
         LOGGER.info("Writing File...");
         try {
             LOGGER.info("ID: {} | Type: {} | Location: {}", load.getId(),
