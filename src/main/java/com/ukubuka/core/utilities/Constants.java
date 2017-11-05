@@ -1,5 +1,7 @@
 package com.ukubuka.core.utilities;
 
+import java.math.BigDecimal;
+
 /**
  * Application Constants
  * 
@@ -21,6 +23,16 @@ public final class Constants {
     /******************************* Transformer Constants ********************************/
     public static final String COLUMN_ENCOLSING_QUOTE = "\"";
     public static final String SHORTCUT_MAP_DELIMITER = "=";
+
+    /******************************** Evaluator Constants *********************************/
+    public static final int DIVISION_OPERATION_PRECISION = 25;
+    public static final int DIVISION_OPERATION_ROUNDING = BigDecimal.ROUND_HALF_UP;
+
+    /****************************** Scripts Reader Constants ******************************/
+    public static final String CONTENT_TAG = "$$$CONTENT$$$";
+    public static final String FORWARD_SLASH = "/";
+    public static final String OPENING_BRACKET = "<";
+    public static final String CLOSING_BRACKET = ">";
 
     /******************************** Private Constructor *********************************/
     private Constants() {

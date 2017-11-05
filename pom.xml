@@ -6,7 +6,7 @@
 	<artifactId>ukubuka-core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Ukubuka Core</name>
-	<description>Ukubuka Core</description>
+	<description>Ukubuka Core Project</description>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>
@@ -145,6 +145,12 @@
 				</plugin>
 
 				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.1.1</version>
+				</plugin>
+
+				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.7.7.201606060606</version>
@@ -174,4 +180,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<url>https://github.com/ukubuka/ukubuka-core</url>
 </project>

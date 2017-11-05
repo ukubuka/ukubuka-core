@@ -18,14 +18,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.SupportedSource;
 import com.ukubuka.core.model.TransformOperation;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Transform;
 import com.ukubuka.core.model.UkubukaSchema.TransformOperations;
+import com.ukubuka.core.model.UkubukaSchema.TransformOperationsType;
 import com.ukubuka.core.reader.UkubukaReader;
 
 /**
@@ -54,7 +57,8 @@ public class UkubukaTransformerTest {
 
     /******************************** Test(s) ********************************/
     @Test
-    public void test_performOperations_add_success() throws TransformException {
+    public void test_performOperations_add_success()
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.ADD);
         transformOperation.setSource("foobar");
@@ -67,25 +71,34 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
 
     @Test
     public void test_performOperations_add_withSrct_success()
-            throws TransformException, ReaderException {
+            throws PipelineException, TransformException, ReaderException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.ADD);
         transformOperation.setSource("foobar");
@@ -98,29 +111,39 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
 
         Mockito.when(reader.readFileAsString(Mockito.any(SupportedSource.class),
                 Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("$RANDOM$=new java.util.Random()");
         ukubukaTransformer.initShortcutMap();
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
 
     @Test
-    public void test_performOperations_new_success() throws TransformException {
+    public void test_performOperations_new_success()
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.NEW);
         transformOperation.setSource("foobar");
@@ -133,25 +156,33 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
 
-        Mockito.verify(expressionEvaluator, Mockito.times(2))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
         assertEquals(3, fileHeader.size());
         assertTrue(fileHeader.contains("foobar"));
     }
 
     @Test
     public void test_performOperations_new_idNoMatch_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.NEW);
         transformOperation.setSource("foobar");
@@ -164,23 +195,31 @@ public class UkubukaTransformerTest {
         List<TransformOperations> operationsList = new ArrayList<>(
                 Arrays.asList(transformOperation));
 
-        Mockito.when(expressionEvaluator.evaluate(Mockito.any(FileRecord.class),
-                Mockito.anyString())).thenReturn(0xCafeBabe);
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(0xCafeBabe);
 
         Transform transforms = new Transform();
         transforms.setId("foo-Y");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
 
-        Mockito.verify(expressionEvaluator, Mockito.times(0))
-                .evaluate(Mockito.any(FileRecord.class), Mockito.anyString());
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(0)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
     }
 
     @Test
     public void test_performOperations_delete_success()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.DELETE);
         transformOperation.setSource("foo");
@@ -194,18 +233,23 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
         assertEquals(1, fileHeader.size());
         assertFalse(fileHeader.contains("foo"));
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_delete_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.DELETE);
         transformOperation.setSource("foobar");
@@ -219,15 +263,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
     public void test_performOperations_remove_success()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.REMOVE);
         transformOperation.setSource("bar");
@@ -241,18 +290,23 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
         assertEquals(1, fileHeader.size());
         assertFalse(fileHeader.contains("bar"));
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_remove_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.REMOVE);
         transformOperation.setSource("foobar");
@@ -266,15 +320,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
     public void test_performOperations_rename_success()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.RENAME);
         transformOperation.setSource("foo");
@@ -289,19 +348,24 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
         assertEquals(2, fileHeader.size());
         assertFalse(fileHeader.contains("foo"));
         assertTrue(fileHeader.contains("foobar"));
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_rename_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.RENAME);
         transformOperation.setSource("foobar");
@@ -316,15 +380,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
     public void test_performOperations_swap_success()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.SWAP);
         transformOperation.setSource("foo");
@@ -339,19 +408,24 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
         assertEquals(2, fileHeader.size());
         assertEquals("bar", fileHeader.get(0));
         assertEquals("foo", fileHeader.get(1));
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_swap_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.SWAP);
         transformOperation.setSource("foobar");
@@ -366,15 +440,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test
     public void test_performOperations_move_success()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.MOVE);
         transformOperation.setSource("bar");
@@ -389,19 +468,24 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
 
         assertEquals(2, fileHeader.size());
         assertEquals("bar", fileHeader.get(0));
         assertEquals("foo", fileHeader.get(1));
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_move_failure()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.MOVE);
         transformOperation.setSource("foobar");
@@ -416,15 +500,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test(expected = NullPointerException.class)
     public void test_performOperations_invalid_operation()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setSource("foo");
         transformOperation.setTarget("0");
@@ -438,15 +527,20 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
-    @Test(expected = TransformException.class)
+    @Test(expected = PipelineException.class)
     public void test_performOperations_unsupported_operation()
-            throws TransformException {
+            throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
         transformOperation.setType(TransformOperation.NONE);
         transformOperation.setSource("foo");
@@ -461,10 +555,15 @@ public class UkubukaTransformerTest {
 
         Transform transforms = new Transform();
         transforms.setId("foo-X");
-        transforms.setOperations(operationsList);
-        Map<String, FileContents> map = new HashMap<>();
-        map.put("foo-X", new FileContents(fileHeader, fileRecords));
-        ukubukaTransformer.performOperations(map, Arrays.asList(transforms));
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
     }
 
     @Test

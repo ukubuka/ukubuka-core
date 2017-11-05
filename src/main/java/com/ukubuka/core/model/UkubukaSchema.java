@@ -117,7 +117,7 @@ public class UkubukaSchema {
         private String id;
 
         @JsonProperty("operations")
-        private List<TransformOperations> operations;
+        private TransformOperationsType operations;
 
         /**
          * @return the id
@@ -137,7 +137,7 @@ public class UkubukaSchema {
         /**
          * @return the operations
          */
-        public List<TransformOperations> getOperations() {
+        public TransformOperationsType getOperations() {
             return operations;
         }
 
@@ -145,8 +145,53 @@ public class UkubukaSchema {
          * @param operations
          *            the operations to set
          */
-        public void setOperations(List<TransformOperations> operations) {
+        public void setOperations(TransformOperationsType operations) {
             this.operations = operations;
+        }
+    }
+
+    /**
+     * Transform Operations Type
+     * 
+     * @author agrawroh
+     * @version v1.0
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class TransformOperationsType {
+        @JsonProperty("column")
+        private List<TransformOperations> column;
+
+        @JsonProperty("row")
+        private TransformOperations row;
+
+        /**
+         * @return the column
+         */
+        public List<TransformOperations> getColumn() {
+            return column;
+        }
+
+        /**
+         * @param column
+         *            the column to set
+         */
+        public void setColumn(List<TransformOperations> column) {
+            this.column = column;
+        }
+
+        /**
+         * @return the row
+         */
+        public TransformOperations getRow() {
+            return row;
+        }
+
+        /**
+         * @param row
+         *            the row to set
+         */
+        public void setRow(TransformOperations row) {
+            this.row = row;
         }
     }
 
