@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <!-- <script src="echarts.js"></script> -->
+    <script src="https://cdn.bootcss.com/echarts/3.6.2/echarts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 800px;height:800px;"></div>
+    <script type="text/javascript">
+        //var echarts = require('echarts');
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        $.getJSON("pie.json", function(data){
+
+            var option = {};
+            var statement;
+
+            statement = "pie";
+            switch (statement) {
+                case "bar":
+                    keys = $.map(data[0], function(v, i){
+                        return i;
+                    });
+                    var Name = [];
+                    var Value = [];
+                    //console.log(keys);
+                    //console.log(data[0][keys[0]]);
+
+                    for (i = 0; i < Object.keys(data).length; i++) { 
+                        Name.push(data[i][keys[0]]);
+                        Value.push(data[i][keys[1]]);
+                    }
+                    
+                    var option = {
+                        title: {
+                            text: 'ECharts 入门示例'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data:['销量']
+                        },
+                        xAxis: {
+                            data: Name
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '销量',
+                            type: 'bar',
+                            data: Value
+                        }]
+                    };
+                    break;
+                case "pie":
+                    keys = $.map(data[0], function(v, i){
+                        return i;
+                    });
+                    var arr = [];
+                    var arr2 = [];
+
+                        for (i = 0; i < Object.keys(data).length; i++) { 
+                                arr.push(data[i][keys[0]]);
+                                arr2.push(data[i][keys[1]]);
+                        }
+                    
+                            //shows correct array list
+                            //alert(arr);
+
+
+                            var option = {
+                                title: {
+                                    text: 'Pie Chart',
+                                    subtext: '',
+                                    x: 'center',
+                                    textStyle: {
+                                            color: '#ccc'
+                                        }
+                                },
+
+                                //??
+
+                                tooltip: {
+                                    trigger: 'item',
+                                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                },
+
+                                //setting legends
+
+                                legend: {
+                                    orient: 'vertical',
+                                    left: 'left',
+                                    //data: arr2
+                                    //data: ['Searching Engine','Direct','Email','Alliance Advertisement','Video Advertisement']
+                                },
+
+
+
+                                //setting download, see data options on the screen
+
+                                // toolbox: {
+                                //     show: true,
+                                //     feature: {
+                                //         mark: { show: true },
+                                //         dataView: { show: true, readOnly: true },
+                                //         magicType: {
+                                //             show: true,
+                                //             type: ['pie'],
+                                //             option: {
+                                //                 funnel: {
+                                //                     x: '25%',
+                                //                     width: '50%',
+                                //                     funnelAlign: 'left',
+                                //                     max: 1548
+                                //                 }
+                                //             }
+                                //         },
+                                //         restore: { show: true },
+                                //         saveAsImage: { show: true }
+                                //     }
+                                // },
+
+                                //setting shades in the pie
+
+                                visualMap: {
+                                        show: false,
+                                        min: 80,
+                                        max: 600,
+                                        inRange: {
+                                            colorLightness: [0, 1]
+                                        }
+                                    },
+
+                                //setting the background of the pie
+
+                                backgroundColor: '#2c343c',
+
+                                //setting the labels and labellines in the pie
+
+                                // label: {
+                                //         normal: {
+                                //             textStyle: {
+                                //                 color: 'rgba(255, 255, 255, 0.3)'
+                                //             }
+                                //         }
+                                //     },
+                                // labelLine: {
+                                //     normal: {
+                                //         lineStyle: {
+                                //             color: '#ccc'
+                                //         },
+                                //         smooth: 0.2,
+                                //         length: 10,
+                                //         length2: 20
+                                //     }
+                                // },
+
+                                //setting shadow around the pie.......itemStyle: emphasis/normal
+
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+
+                                //setting aniation of the pie
+
+                                animationType: 'scale',
+                                animationEasing: 'elasticOut',
+                                // animationDelay: function (idx) {
+                                //     return Math.random() * 200;
+                                // }
+
+
+                                //calculable: false,
+
+                                //setting basic features of the pie
+
+                                series: [
+                                    {
+                                        name: 'Pie Chart',
+                                        type: 'pie',
+                                        radius: '75%',
+                                        center: ['50%', '60%'],
+                                        //roseType: 'angle',
+                                        data: arr
+
+                                    }
+                                ]
+                            };
+
+            }
+            
+            myChart.setOption(option);
+        });
+
+    </script>
+</body>
+</html>
