@@ -13,6 +13,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +43,8 @@ public class UkubukaXMLParserTest {
     @InjectMocks
     private UkubukaXMLParser ukubukaXMLParser;
 
+    private XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
     /**************************** Initialize Mocks ***************************/
     @Before
     public void init() {
@@ -57,6 +65,18 @@ public class UkubukaXMLParserTest {
 
         assertEquals(3, fileContents.getHeader().size());
         assertEquals(3, fileContents.getData().size());
+    }
+
+    @Test
+    public void test_extractDataFromStream_success()
+            throws ReaderException, ParserException, FileNotFoundException, XMLStreamException {
+        InputStream in = new FileInputStream(new File(this.getClass().getClassLoader()
+                .getResource("test.xml").getFile()));
+        XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(in);
+
+        String fileContents = ukubukaXMLParser.extractDataFromStream(xmlStreamReader);
+
+        assertEquals(4, fileContents.split("\n").length);
     }
 
     @Test

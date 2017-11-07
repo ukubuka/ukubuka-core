@@ -1,5 +1,6 @@
 package com.ukubuka.core.reader;
 
+import com.ukubuka.core.parser.impl.UkubukaXMLParser;
 import org.junit.Test;
 
 import com.ukubuka.core.exception.ReaderException;
@@ -14,6 +15,7 @@ import com.ukubuka.core.model.SupportedSource;
 public class UkubukaReaderTest {
 
     private UkubukaReader ukubukaReader = new UkubukaReader();
+    private UkubukaXMLParser ukubukaXMLParser = new UkubukaXMLParser();
 
     /******************************** Test(s) ********************************/
     @Test
@@ -78,4 +80,12 @@ public class UkubukaReaderTest {
                         .toString().replace("file:/", "file://"),
                 null);
     }
+
+//    @Test
+//    public void test_readXMLAsString_success()
+//            throws ReaderException {
+//        ukubukaReader
+//                .readXMLAsString(SupportedSource.FILE,this.getClass().getClassLoader()
+//                        .getResource("test.xml").getFile(), ukubukaXMLParser);
+//    }
 }
