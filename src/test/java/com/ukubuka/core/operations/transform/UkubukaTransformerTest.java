@@ -129,7 +129,6 @@ public class UkubukaTransformerTest {
         Mockito.when(reader.readFileAsString(Mockito.any(SupportedSource.class),
                 Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("$RANDOM$=new java.util.Random()");
-        ukubukaTransformer.initShortcutMap();
 
         UkubukaSchema ukubukaSchema = new UkubukaSchema();
         ukubukaSchema.setTransforms(Arrays.asList(transforms));
@@ -566,27 +565,6 @@ public class UkubukaTransformerTest {
         ukubukaSchema.setTransforms(Arrays.asList(transforms));
 
         ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
-    }
-
-    @Test
-    public void test_initShortcutMap_success() throws ReaderException {
-        Mockito.when(reader.readFileAsString(Mockito.any(SupportedSource.class),
-                Mockito.anyString(), Mockito.anyString()))
-                .thenReturn("foo=bar");
-        ukubukaTransformer.initShortcutMap();
-        Mockito.verify(reader, Mockito.times(1)).readFileAsString(
-                Mockito.any(SupportedSource.class), Mockito.anyString(),
-                Mockito.anyString());
-    }
-
-    @Test(expected = ReaderException.class)
-    public void test_initShortcutMap_failure() throws ReaderException {
-        Mockito.when(reader.readFileAsString(Mockito.any(SupportedSource.class),
-                Mockito.anyString(), Mockito.anyString())).thenReturn(null);
-        ukubukaTransformer.initShortcutMap();
-        Mockito.verify(reader, Mockito.times(1)).readFileAsString(
-                Mockito.any(SupportedSource.class), Mockito.anyString(),
-                Mockito.anyString());
     }
 
     @Test

@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,8 @@ import org.springframework.util.CollectionUtils;
 
 import com.ukubuka.core.evaluator.UkubukaExpressionEvaluator;
 import com.ukubuka.core.exception.PipelineException;
-import com.ukubuka.core.exception.ReaderException;
 import com.ukubuka.core.exception.TransformException;
+import com.ukubuka.core.launcher.UkubukaLauncher;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.SupportedSource;
@@ -51,7 +49,6 @@ public class UkubukaTransformer implements UkubukaOperations {
             .getLogger(UkubukaTransformer.class);
 
     /************************************ Global Variables **********************************/
-    private Map<String, String> sMap;
     private static final EnumSet<TransformOperation> TRANSFORM_OPERATION_EXCEPTIONS = EnumSet
             .of(TransformOperation.ADD, TransformOperation.NEW,
                     TransformOperation.INCLUDE, TransformOperation.EXCLUDE,
@@ -65,32 +62,6 @@ public class UkubukaTransformer implements UkubukaOperations {
 
     @Autowired
     private UkubukaReader reader;
-
-    /*********************************** Post Construct *************************************/
-    @PostConstruct
-    public void initShortcutMap() throws ReaderException {
-        /* Get Mappings File */
-        String[] fileContents;
-        try {
-            fileContents = this.reader
-                    .readFileAsString(SupportedSource.FILE,
-                            this.getClass().getClassLoader()
-                                    .getResource("shortcut-mappings").getFile(),
-                            Constants.DEFAULT_FILE_ENCODING)
-                    .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
-        } catch (Exception ex) {
-            LOGGER.error("Unable To Read Shortcut Mappings!", ex);
-            throw new ReaderException("Unable To Read Shortcut Mappings!");
-        }
-
-        /* Create Shortcuts Map */
-        sMap = new HashMap<>();
-        for (final String fileContent : fileContents) {
-            String[] keyValuePair = fileContent
-                    .split(Constants.SHORTCUT_MAP_DELIMITER);
-            sMap.put(keyValuePair[0], keyValuePair[1]);
-        }
-    }
 
     /**
      * Perform Operations
@@ -515,9 +486,11 @@ public class UkubukaTransformer implements UkubukaOperations {
      * Get Original Target
      * 
      * @param target
+     * @param sMap
      * @return modifiedTarget
      */
-    private String getOriginalTarget(final String target) {
+    private String getOriginalTarget(final String target,
+            final Map<String, String> sMap) {
         String modifiedTarget = target;
         for (final Entry<String, String> shortcutEntry : sMap.entrySet()) {
             modifiedTarget = modifiedTarget.replace(shortcutEntry.getKey(),
@@ -639,10 +612,43 @@ public class UkubukaTransformer implements UkubukaOperations {
      */
     private Object evaluateExpression(final FileContents fileContents,
             final FileRecord fileRecord, final String target) {
+        Map<String, String> sMap = getShortcutsMap();
         Object expressionValue = expressionEvaluator.evaluate(fileContents,
                 fileRecord, CollectionUtils.isEmpty(sMap) ? target
-                        : getOriginalTarget(target));
+                        : getOriginalTarget(target, sMap));
         LOGGER.info("Evaluated Expression Value: {}", expressionValue);
         return expressionValue;
+    }
+
+    /**
+     * Get Shortcuts Map
+     * 
+     * @return sMap
+     */
+    private Map<String, String> getShortcutsMap() {
+        /* Get Mappings File */
+        String[] fileContents;
+        try {
+            fileContents = this.reader
+                    .readFileAsString(SupportedSource.FILE, UkubukaLauncher
+                            .getAppContext()
+                            .getResource(
+                                    Constants.CLASSPATH + "shortcut-mappings")
+                            .getFile().getAbsolutePath(),
+                            Constants.DEFAULT_FILE_ENCODING)
+                    .split(Constants.DEFAULT_FILE_END_LINE_DELIMITER);
+        } catch (Exception ex) {
+            LOGGER.error("Unable To Read Shortcut Mappings!", ex);
+            return Collections.emptyMap();
+        }
+
+        /* Create Shortcuts Map */
+        Map<String, String> sMap = new HashMap<>();
+        for (final String fileContent : fileContents) {
+            String[] keyValuePair = fileContent
+                    .split(Constants.SHORTCUT_MAP_DELIMITER);
+            sMap.put(keyValuePair[0], keyValuePair[1]);
+        }
+        return sMap;
     }
 }
