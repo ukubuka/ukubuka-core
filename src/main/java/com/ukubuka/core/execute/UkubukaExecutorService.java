@@ -47,6 +47,10 @@ public class UkubukaExecutorService {
     @Qualifier("UkubukaLoader")
     private UkubukaOperations ukubukaLoader;
 
+    @Autowired
+    @Qualifier("UkubukaVisualizer")
+    private UkubukaOperations ukubukaVisualizer;
+
     /**
      * Execute Ukubuka
      * 
@@ -76,5 +80,9 @@ public class UkubukaExecutorService {
         /* Perform Load */
         LOGGER.info("Performing Load(s)...");
         ukubukaLoader.performOperations(dataFiles, ukubukaSchema);
+
+        /* Perform Visualizations */
+        LOGGER.info("Performing Visualization(s)...");
+        ukubukaVisualizer.performOperations(dataFiles, ukubukaSchema);
     }
 }

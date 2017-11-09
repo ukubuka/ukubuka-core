@@ -1,8 +1,7 @@
 package com.ukubuka.core.scripts;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ReaderException;
+import com.ukubuka.core.launcher.UkubukaLauncher;
 import com.ukubuka.core.model.SupportedSource;
-import com.ukubuka.core.operations.visualize.UkubukaVisualizer;
 import com.ukubuka.core.reader.UkubukaReader;
 import com.ukubuka.core.utilities.Constants;
 
@@ -32,28 +31,51 @@ public class UkubukaScriptsReader {
     @Autowired
     private UkubukaReader reader;
 
-    public static void main(String[] args) throws ReaderException {
-        System.out.println(new UkubukaScriptsReader()
-                .readScripts(UkubukaVisualizer.class.getClassLoader()
-                        .getResource("scripts/tau-charts/include").getFile()));
+    /**
+     * Read Scripts
+     * 
+     * @param scriptsDirectoryRoot
+     * @return htmlFileContents
+     * @throws ReaderException
+     * @throws IOException
+     */
+    public String createHTML(final String scriptsDirectoryRoot)
+            throws ReaderException, IOException {
+        StringBuilder htmlFileBuilder = new StringBuilder();
+        htmlFileBuilder.append(getFileContents(UkubukaLauncher.getAppContext()
+                .getResource(
+                        scriptsDirectoryRoot + Constants.BLANK_TEMPLATE_TAG)
+                .getFile().getAbsolutePath())
+                        .replace(Constants.HEAD_TAG,
+                                readScripts(scriptsDirectoryRoot
+                                        + Constants.INCLUDE_TAG))
+                        .replace(Constants.BODY_TAG,
+                                getFileContents(UkubukaLauncher.getAppContext()
+                                        .getResource(scriptsDirectoryRoot
+                                                + Constants.HTML_BODY_TAG)
+                                        .getFile().getAbsolutePath())));
+        return htmlFileBuilder.toString();
     }
 
     /**
      * Read Scripts
      * 
      * @param scriptsDirectoryRoot
-     * @return Map<HTMLTag, Scripts>
+     * @return htmlFileContents
      * @throws ReaderException
+     * @throws IOException
      */
-    private Map<String, String> readScripts(final String scriptsDirectoryRoot)
-            throws ReaderException {
-        Map<String, String> scriptsMap = new HashMap<>();
+    private String readScripts(final String scriptsDirectoryRoot)
+            throws ReaderException, IOException {
+        StringBuilder htmlFileBuilder = new StringBuilder();
         LOGGER.info("Reading Directory: {}", scriptsDirectoryRoot);
-        for (final File file : new File(scriptsDirectoryRoot).listFiles()) {
+        for (final File file : UkubukaLauncher.getAppContext()
+                .getResource(scriptsDirectoryRoot).getFile().listFiles()) {
             if (file.isDirectory()) {
                 LOGGER.info("Reading Resource Directory: {}", file.getName());
-                scriptsMap.put(file.getName(), readScript(
-                        file.getAbsolutePath(),
+                htmlFileBuilder.append(readScript(
+                        scriptsDirectoryRoot + Constants.FORWARD_SLASH
+                                + file.getName(),
                         new StringBuilder().append(
                                 Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .append(Constants.OPENING_BRACKET)
@@ -63,14 +85,14 @@ public class UkubukaScriptsReader {
                                 .append(Constants.CONTENT_TAG)
                                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .append(Constants.OPENING_BRACKET)
-                                .append(file.getName())
                                 .append(Constants.FORWARD_SLASH)
+                                .append(file.getName())
                                 .append(Constants.CLOSING_BRACKET)
                                 .append(Constants.DEFAULT_FILE_END_LINE_DELIMITER)
                                 .toString()));
             }
         }
-        return scriptsMap;
+        return htmlFileBuilder.toString();
     }
 
     /**
@@ -80,16 +102,22 @@ public class UkubukaScriptsReader {
      * @param htmlTag
      * @return
      * @throws ReaderException
+     * @throws IOException
      */
     private String readScript(final String resourceDirectoryPath,
-            final String htmlTag) throws ReaderException {
+            final String htmlTag) throws ReaderException, IOException {
         StringBuilder builder = new StringBuilder();
-        for (final File file : new File(resourceDirectoryPath).listFiles()) {
+        for (final File file : UkubukaLauncher.getAppContext()
+                .getResource(resourceDirectoryPath).getFile().listFiles()) {
             LOGGER.info("Reading Resource: {}", file.getAbsolutePath());
             builder.append(file.isDirectory()
                     ? readScript(file.getAbsolutePath(), htmlTag)
                     : htmlTag.replace(Constants.CONTENT_TAG,
-                            getFileContents(file.getAbsolutePath())));
+                            getFileContents(UkubukaLauncher.getAppContext()
+                                    .getResource(resourceDirectoryPath
+                                            + Constants.FORWARD_SLASH
+                                            + file.getName())
+                                    .getFile().getAbsolutePath())));
         }
         return builder.toString();
     }
@@ -103,7 +131,6 @@ public class UkubukaScriptsReader {
      */
     private String getFileContents(final String completeFileName)
             throws ReaderException {
-        reader = new UkubukaReader();
         return reader.readFileAsString(SupportedSource.FILE, completeFileName,
                 Constants.DEFAULT_FILE_ENCODING);
     }

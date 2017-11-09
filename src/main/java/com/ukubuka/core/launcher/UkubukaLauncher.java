@@ -47,9 +47,16 @@ public class UkubukaLauncher {
     private void execute(String[] arguments)
             throws ParserException, PipelineException {
         /* Read Schema File */
-        UkubukaExecutorService executorService = getAppContext()
-                .getBean(UkubukaExecutorService.class);
-        executorService.execute(arguments[0]);
+        getExecutorServices().execute(arguments[0]);
+    }
+
+    /**
+     * Get Executor Services
+     * 
+     * @return executorServices
+     */
+    public UkubukaExecutorService getExecutorServices() {
+        return getAppContext().getBean(UkubukaExecutorService.class);
     }
 
     /**

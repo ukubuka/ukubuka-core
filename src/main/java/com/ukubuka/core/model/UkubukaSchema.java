@@ -24,6 +24,9 @@ public class UkubukaSchema {
     @JsonProperty("load")
     private List<Load> loads;
 
+    @JsonProperty("visualize")
+    private List<Visualization> visualizations;
+
     /**
      * Extract
      * 
@@ -340,6 +343,143 @@ public class UkubukaSchema {
     }
 
     /**
+     * Visualization
+     * 
+     * @author agrawroh
+     * @version v1.0
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Visualization {
+        @JsonProperty("id")
+        private String id;
+
+        @JsonProperty("type")
+        private String type;
+
+        @JsonProperty("location")
+        private String location;
+
+        @JsonProperty("flags")
+        private VisualizeFlags flags;
+
+        /**
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+
+        /**
+         * @param id the id to set
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        /**
+         * @return the type
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         * @param type the type to set
+         */
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        /**
+         * @return the location
+         */
+        public String getLocation() {
+            return location;
+        }
+
+        /**
+         * @param location the location to set
+         */
+        public void setLocation(String location) {
+            this.location = location;
+        }
+
+        /**
+         * @return the flags
+         */
+        public VisualizeFlags getFlags() {
+            return flags;
+        }
+
+        /**
+         * @param flags the flags to set
+         */
+        public void setFlags(VisualizeFlags flags) {
+            this.flags = flags;
+        }
+    }
+
+    /**
+     * Visualize Flags
+     * 
+     * @author agrawroh
+     * @version v1.0
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class VisualizeFlags {
+        @JsonProperty("width")
+        private String width;
+
+        @JsonProperty("height")
+        private String height;
+
+        @JsonProperty("options")
+        private String options;
+
+        /**
+         * @return the width
+         */
+        public String getWidth() {
+            return width;
+        }
+
+        /**
+         * @param width the width to set
+         */
+        public void setWidth(String width) {
+            this.width = width;
+        }
+
+        /**
+         * @return the height
+         */
+        public String getHeight() {
+            return height;
+        }
+
+        /**
+         * @param height the height to set
+         */
+        public void setHeight(String height) {
+            this.height = height;
+        }
+
+        /**
+         * @return the options
+         */
+        public String getOptions() {
+            return options;
+        }
+
+        /**
+         * @param options the options to set
+         */
+        public void setOptions(String options) {
+            this.options = options;
+        }
+    }
+
+    /**
      * Load Operations
      * 
      * @author agrawroh
@@ -463,5 +603,19 @@ public class UkubukaSchema {
      */
     public void setLoads(List<Load> loads) {
         this.loads = loads;
+    }
+
+    /**
+     * @return the visualizations
+     */
+    public List<Visualization> getVisualizations() {
+        return visualizations;
+    }
+
+    /**
+     * @param visualizations the visualizations to set
+     */
+    public void setVisualizations(List<Visualization> visualizations) {
+        this.visualizations = visualizations;
     }
 }

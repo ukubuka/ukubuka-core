@@ -14,6 +14,7 @@ import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.operations.extract.UkubukaExtractor;
 import com.ukubuka.core.operations.load.UkubukaLoader;
 import com.ukubuka.core.operations.transform.UkubukaTransformer;
+import com.ukubuka.core.operations.visualize.UkubukaVisualizer;
 import com.ukubuka.core.schema.UkubukaSchemaReader;
 
 /**
@@ -36,6 +37,9 @@ public class UkubukaExecutorServiceTest {
 
     @Mock
     private UkubukaLoader ukubukaLoader;
+
+    @Mock
+    private UkubukaVisualizer ukubukaVisualizer;
 
     @Mock
     private UkubukaSchema ukubukaSchema;
@@ -68,6 +72,10 @@ public class UkubukaExecutorServiceTest {
                 Mockito.anyMapOf(String.class, FileContents.class),
                 Mockito.any(UkubukaSchema.class));
 
+        Mockito.doNothing().when(ukubukaVisualizer).performOperations(
+                Mockito.anyMapOf(String.class, FileContents.class),
+                Mockito.any(UkubukaSchema.class));
+
         ukubukaExecutorService.execute("foobar");
 
         Mockito.when(ukubukaSchemaReader.readSchema(Mockito.anyString()))
@@ -82,6 +90,10 @@ public class UkubukaExecutorServiceTest {
                 Mockito.any(UkubukaSchema.class));
 
         Mockito.verify(ukubukaLoader, Mockito.times(1)).performOperations(
+                Mockito.anyMapOf(String.class, FileContents.class),
+                Mockito.any(UkubukaSchema.class));
+
+        Mockito.verify(ukubukaVisualizer, Mockito.times(1)).performOperations(
                 Mockito.anyMapOf(String.class, FileContents.class),
                 Mockito.any(UkubukaSchema.class));
     }
