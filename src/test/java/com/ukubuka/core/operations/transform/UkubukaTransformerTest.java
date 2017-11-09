@@ -2,8 +2,10 @@ package com.ukubuka.core.operations.transform;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -586,4 +588,283 @@ public class UkubukaTransformerTest {
                 Mockito.any(SupportedSource.class), Mockito.anyString(),
                 Mockito.anyString());
     }
+
+    @Test
+    public void test_performOperations_sum_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.SUM);
+        transformOperation.setSource("foobar");
+        transformOperation.setTarget("data[1]");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("2"))))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(2);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+        assertEquals(new BigDecimal(4),
+                dataFiles.get("foo-X").getAggregations().get("foobar"));
+    }
+
+    @Test
+    public void test_performOperations_min_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.MIN);
+        transformOperation.setSource("foobar");
+        transformOperation.setTarget("data[1]");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(2);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+        assertEquals(new BigDecimal(2),
+                dataFiles.get("foo-X").getAggregations().get("foobar"));
+    }
+
+    @Test
+    public void test_performOperations_max_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.MAX);
+        transformOperation.setSource("foobar");
+        transformOperation.setTarget("data[1]");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(3);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+        assertEquals(new BigDecimal(3),
+                dataFiles.get("foo-X").getAggregations().get("foobar"));
+    }
+
+    @Test
+    public void test_performOperations_avg_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.AVG);
+        transformOperation.setSource("foobar");
+        transformOperation.setTarget("data[1]");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("3")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(new BigDecimal(3));
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+        assertNotNull(dataFiles.get("foo-X").getAggregations().get("foobar"));
+    }
+
+    @Test
+    public void test_performOperations_count_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.COUNT);
+        transformOperation.setSource("foobar");
+        transformOperation.setTarget("data[1]");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        List<TransformOperations> operationsList = new ArrayList<>(
+                Arrays.asList(transformOperation));
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setColumn(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        assertEquals(new BigDecimal(2),
+                dataFiles.get("foo-X").getAggregations().get("foobar"));
+
+    }
+
+    @Test
+    public void test_performOperations_include_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.INCLUDE);
+        transformOperation.setTarget("$DOUBLE$(data[1]) < 3d");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        TransformOperations operationsList = transformOperation;
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(true);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setRow(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+    }
+
+    @Test
+    public void test_performOperations_exclude_success()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.EXCLUDE);
+        transformOperation.setTarget("$DOUBLE$(data[1]) < 3d");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        TransformOperations operationsList = transformOperation;
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(true);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setRow(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+    }
+
 }
