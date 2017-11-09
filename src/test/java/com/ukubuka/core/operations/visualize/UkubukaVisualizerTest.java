@@ -96,6 +96,51 @@ public class UkubukaVisualizerTest {
                 Mockito.anyListOf(FileRecord.class));
     }
 
+    @Test
+    public void test_performOperations_empty_location_success()
+            throws PipelineException, ReaderException, WriterException,
+            IOException {
+        Visualization visualization = new Visualization();
+        visualization.setId("foo-X");
+        VisualizeFlags visualizeFlags = new VisualizeFlags();
+        visualizeFlags.setHeight("512");
+        visualizeFlags.setWidth("512");
+        visualizeFlags.setOptions("foo");
+        visualization.setFlags(visualizeFlags);
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(Arrays.asList("bar", "foo"))),
+                new FileRecord(new ArrayList<>(Arrays.asList("foo", "bar")))));
+        List<Visualization> visualizations = new ArrayList<>(
+                Arrays.asList(visualization));
+
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setVisualizations(visualizations);
+
+        Mockito.when(scriptsReader.createHTML(Mockito.anyString()))
+                .thenReturn("fooBar");
+        Mockito.doNothing().when(writer).writeFile(Mockito.anyString(),
+                Mockito.anyString());
+        Mockito.when(writer.prettyPrint(Mockito.anyString())).thenReturn("foo");
+        Mockito.when(writer.writeJSON(Mockito.anyListOf(String.class),
+                Mockito.anyListOf(FileRecord.class)))
+                .thenReturn(new JSONArray());
+
+        ukubukaVisualizer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(scriptsReader, Mockito.times(1))
+                .createHTML(Mockito.anyString());
+        Mockito.verify(writer, Mockito.times(1))
+                .prettyPrint(Mockito.anyString());
+        Mockito.verify(writer, Mockito.times(1)).writeJSON(
+                Mockito.anyListOf(String.class),
+                Mockito.anyListOf(FileRecord.class));
+    }
+
     @Test(expected = PipelineException.class)
     public void test_performOperations_writer_exception()
             throws PipelineException, ReaderException, WriterException,
