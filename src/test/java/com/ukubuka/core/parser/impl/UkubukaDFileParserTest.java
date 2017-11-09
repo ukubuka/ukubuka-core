@@ -154,7 +154,7 @@ public class UkubukaDFileParserTest {
         Mockito.verify(reader, Mockito.times(1)).readFileAsString(
                 Mockito.any(SupportedSource.class), Mockito.anyString(),
                 Mockito.anyString());
-        /*TODO - Change the logic in StitchHeader()*/
+        /* TODO - Change the logic in StitchHeader() */
         // assertEquals(2, fileContents.getHeader().size());
         assertEquals(2, fileContents.getData().size());
 

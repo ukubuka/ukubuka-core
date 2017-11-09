@@ -1,5 +1,6 @@
 package com.ukubuka.core.operations.visualize;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class UkubukaVisualizer implements UkubukaOperations {
             final UkubukaSchema schema) throws PipelineException {
         try {
             performOperations(dataFiles, schema.getVisualizations());
-        } catch (ReaderException | WriterException ex) {
+        } catch (ReaderException | WriterException | IOException ex) {
             throw new PipelineException(ex);
         }
     }
@@ -64,11 +65,12 @@ public class UkubukaVisualizer implements UkubukaOperations {
      * @param fileRecords
      * @throws ReaderException
      * @throws WriterException
+     * @throws IOException
      */
     public Map<String, FileContents> performOperations(
             Map<String, FileContents> dataFiles,
             final List<Visualization> visualizations)
-            throws ReaderException, WriterException {
+            throws ReaderException, WriterException, IOException {
         /* Iterate Operations */
         for (final Visualization visualization : visualizations) {
             LOGGER.info("Creating Visualization With Hash: HC{}",
@@ -95,14 +97,15 @@ public class UkubukaVisualizer implements UkubukaOperations {
      * @return htmlPageContent
      * @throws ReaderException
      * @throws WriterException
+     * @throws IOException
      */
     private String createHTMLPage(final Visualization visualization,
             final FileContents fileContents)
-            throws ReaderException, WriterException {
-        return scriptsReader.createHTML(UkubukaVisualizer.class.getClassLoader()
-                .getResource(Constants.SCRIPTS_TAG + Constants.FORWARD_SLASH
-                        + visualization.getType() + Constants.FORWARD_SLASH)
-                .getFile())
+            throws ReaderException, WriterException, IOException {
+        return scriptsReader
+                .createHTML(Constants.CLASSPATH + Constants.SCRIPTS_TAG
+                        + Constants.FORWARD_SLASH + visualization.getType()
+                        + Constants.FORWARD_SLASH)
                 .replace(Constants.WIDTH_TAG,
                         visualization.getFlags().getWidth())
                 .replace(Constants.HEIGHT_TAG,
