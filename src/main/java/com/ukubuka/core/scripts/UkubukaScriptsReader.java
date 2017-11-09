@@ -111,10 +111,8 @@ public class UkubukaScriptsReader {
                 .getResource(resourceDirectoryPath).getFile().listFiles()) {
             LOGGER.info("Reading Resource: {}", file.getAbsolutePath());
             builder.append(file.isDirectory()
-                    ? readScript(UkubukaLauncher.getAppContext()
-                            .getResource(resourceDirectoryPath
-                                    + Constants.FORWARD_SLASH + file.getName())
-                            .getFile().getAbsolutePath(), htmlTag)
+                    ? readScript(resourceDirectoryPath + Constants.FORWARD_SLASH
+                            + file.getName(), htmlTag)
                     : htmlTag.replace(Constants.CONTENT_TAG,
                             getFileContents(UkubukaLauncher.getAppContext()
                                     .getResource(resourceDirectoryPath
