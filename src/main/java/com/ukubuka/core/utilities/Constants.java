@@ -45,6 +45,7 @@ public final class Constants {
     public static final String WIDTH_TAG = "$$$WIDTH$$$";
     public static final String HEIGHT_TAG = "$$$HEIGHT$$$";
     public static final String OPTION_TAG = "$$$OPTION$$$";
+    public static final String CLASSPATH = "classpath:/";
 
     /******************************** Private Constructor *********************************/
     private Constants() {
