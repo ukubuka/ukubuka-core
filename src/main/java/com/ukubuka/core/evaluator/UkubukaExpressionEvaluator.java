@@ -7,6 +7,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
+import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 
 /**
@@ -31,10 +32,17 @@ public class UkubukaExpressionEvaluator {
      * 
      * @return Evaluated Expression
      */
-    public Object evaluate(final FileRecord fileRecord,
-            final String expression) {
+    public Object evaluate(final FileContents fileContents,
+            final FileRecord fileRecord, final String expression) {
+        /* Create Context */
+        StandardEvaluationContext standardEvaluationContext = new StandardEvaluationContext(
+                fileRecord);
+        standardEvaluationContext.setVariable("aggregations",
+                fileContents.getAggregations());
+
+        /* Evaluate Expressions */
         LOGGER.info("Evaluating Expression: {}", expression);
         return expressionParser.parseExpression(expression)
-                .getValue(new StandardEvaluationContext(fileRecord));
+                .getValue(standardEvaluationContext);
     }
 }
