@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.TransformException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.execute.UkubukaExecutorService;
@@ -36,18 +37,26 @@ public class UkubukaLauncher {
 
     /**
      * Execute Program
-     * @throws WriterException 
-     * @throws TransformException 
-     * @throws ParserException 
+     * 
+     * @throws WriterException
+     * @throws TransformException
+     * @throws ParserException
      * 
      * @throws Exception
      */
     private void execute(String[] arguments)
-            throws ParserException, TransformException, WriterException {
-        /* Read Schema File*/
-        UkubukaExecutorService executorService = getAppContext()
-                .getBean(UkubukaExecutorService.class);
-        executorService.execute(arguments[0]);
+            throws ParserException, PipelineException {
+        /* Read Schema File */
+        getExecutorServices().execute(arguments[0]);
+    }
+
+    /**
+     * Get Executor Services
+     * 
+     * @return executorServices
+     */
+    public UkubukaExecutorService getExecutorServices() {
+        return getAppContext().getBean(UkubukaExecutorService.class);
     }
 
     /**

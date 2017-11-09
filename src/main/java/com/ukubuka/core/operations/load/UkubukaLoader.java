@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ukubuka.core.exception.ParserException;
+import com.ukubuka.core.exception.PipelineException;
 import com.ukubuka.core.exception.WriterException;
 import com.ukubuka.core.model.FileContents;
 import com.ukubuka.core.model.FileRecord;
 import com.ukubuka.core.model.LoadOperation;
 import com.ukubuka.core.model.SupportedFileType;
+import com.ukubuka.core.model.UkubukaSchema;
 import com.ukubuka.core.model.UkubukaSchema.Load;
+import com.ukubuka.core.operations.UkubukaOperations;
 import com.ukubuka.core.writer.UkubukaWriter;
 
 /**
@@ -25,8 +28,8 @@ import com.ukubuka.core.writer.UkubukaWriter;
  * @author agrawroh
  * @version v1.0
  */
-@Component
-public class UkubukaLoader {
+@Component("UkubukaLoader")
+public class UkubukaLoader implements UkubukaOperations {
 
     /************************************ Logger Instance ***********************************/
     private static final Logger LOGGER = LoggerFactory
@@ -39,12 +42,28 @@ public class UkubukaLoader {
     /**
      * Perform Operations
      * 
+     * @param dataFiles
+     * @param schema
+     * @throws PipelineException
+     */
+    public void performOperations(Map<String, FileContents> dataFiles,
+            final UkubukaSchema schema) throws PipelineException {
+        try {
+            performOperations(dataFiles, schema.getLoads());
+        } catch (WriterException ex) {
+            throw new PipelineException(ex);
+        }
+    }
+
+    /**
+     * Perform Loads
+     * 
      * @param fileHeader
      * @param operationsList
      * @param fileRecords
-     * @throws WriterException 
+     * @throws WriterException
      */
-    public void performOperations(Map<String, FileContents> dataFiles,
+    private void performOperations(Map<String, FileContents> dataFiles,
             final List<Load> loads) throws WriterException {
         /* Iterate Operations */
         for (final Load load : loads) {
@@ -79,7 +98,22 @@ public class UkubukaLoader {
                             : dataFiles.get(fileId).getData());
         }
 
+        /* Save Local Store Copy */
+        dataFiles.put(load.getId(), fileContents);
+
         /* Write File */
+        writeFile(load, fileContents);
+    }
+
+    /**
+     * Write File
+     * 
+     * @param load
+     * @param fileContents
+     * @throws WriterException
+     */
+    private void writeFile(final Load load, FileContents fileContents)
+            throws WriterException {
         LOGGER.info("Writing File...");
         try {
             LOGGER.info("ID: {} | Type: {} | Location: {}", load.getId(),
@@ -99,25 +133,26 @@ public class UkubukaLoader {
      * @param header
      * @param data
      * @throws ParserException
-     * @throws WriterException 
+     * @throws WriterException
      */
     private void writeFile(final SupportedFileType supportedFileType,
             final String completeFileName, List<String> header,
             List<FileRecord> data) throws ParserException, WriterException {
         /* Get File Type */
         switch (supportedFileType) {
-        /* Delimited File */
-        case CSV:
-            writer.writeFile(completeFileName, writer.writeCSV(header, data));
-            break;
-        /* XML File */
-        case JSON:
-            writer.writeFile(completeFileName, writer
-                    .prettyPrint(writer.writeJSON(header, data).toString()));
-            break;
-        /* Unsupported File */
-        default:
-            throw new ParserException("File Type Not Supported!");
+            /* Delimited File */
+            case CSV:
+                writer.writeFile(completeFileName,
+                        writer.writeCSV(header, data));
+                break;
+            /* XML File */
+            case JSON:
+                writer.writeFile(completeFileName, writer.prettyPrint(
+                        writer.writeJSON(header, data).toString()));
+                break;
+            /* Unsupported File */
+            default:
+                throw new ParserException("File Type Not Supported!");
         }
     }
 }
