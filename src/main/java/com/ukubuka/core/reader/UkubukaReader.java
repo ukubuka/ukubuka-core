@@ -1,9 +1,18 @@
 package com.ukubuka.core.reader;
 
-import com.ukubuka.core.exception.ReaderException;
-import com.ukubuka.core.model.SupportedSource;
-import com.ukubuka.core.parser.impl.UkubukaXMLParser;
-import com.ukubuka.core.utilities.Constants;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.ukubuka.core.exception.ReaderException;
+import com.ukubuka.core.model.SupportedSource;
+import com.ukubuka.core.utilities.Constants;
 
 /**
  * Ukubuka Reader
@@ -91,17 +91,22 @@ public class UkubukaReader {
         }
     }
 
-    public String readXMLAsString(final SupportedSource source,
-                                           final String completeFileName, final UkubukaXMLParser ukubukaXMLParser)
-            throws ReaderException {
+    /**
+     * Read XML File
+     * 
+     * @param source
+     * @param completeFileName
+     * @param ukubukaXMLParser
+     * @return File Lines
+     * @throws ReaderException
+     */
+    public XMLStreamReader readFileAsStream(final SupportedSource source,
+            final String completeFileName) throws ReaderException {
         try {
-            InputStream in = new FileInputStream(source == SupportedSource.URL
-                    ? new File(
-                    new URL(completeFileName).toURI())
-                    : new File(completeFileName));
-            XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(in);
-            return ukubukaXMLParser.extractDataFromStream(xmlStreamReader);
-
+            return inputFactory.createXMLStreamReader(
+                    new FileInputStream(source == SupportedSource.URL
+                            ? new File(new URL(completeFileName).toURI())
+                            : new File(completeFileName)));
         } catch (IOException | URISyntaxException | XMLStreamException ex) {
             throw new ReaderException(ex);
         }
