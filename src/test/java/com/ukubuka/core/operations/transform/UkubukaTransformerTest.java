@@ -830,6 +830,44 @@ public class UkubukaTransformerTest {
     }
 
     @Test
+    public void test_performOperations_include_false()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.INCLUDE);
+        transformOperation.setTarget("$DOUBLE$(data[1]) < 3d");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        TransformOperations operationsList = transformOperation;
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(false);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setRow(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+    }
+
+    @Test
     public void test_performOperations_exclude_success()
             throws PipelineException, TransformException {
         TransformOperations transformOperation = new TransformOperations();
@@ -867,4 +905,41 @@ public class UkubukaTransformerTest {
                 Mockito.anyString());
     }
 
+    @Test
+    public void test_performOperations_exclude_false()
+            throws PipelineException, TransformException {
+        TransformOperations transformOperation = new TransformOperations();
+        transformOperation.setType(TransformOperation.EXCLUDE);
+        transformOperation.setTarget("$DOUBLE$(data[1]) < 3d");
+
+        List<String> fileHeader = new ArrayList<>(Arrays.asList("foo", "bar"));
+        List<FileRecord> fileRecords = new ArrayList<>(Arrays.asList(
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("bar", String.valueOf("2")))),
+                new FileRecord(new ArrayList<>(
+                        Arrays.asList("foo", String.valueOf("3"))))));
+        TransformOperations operationsList = transformOperation;
+
+        Mockito.when(
+                expressionEvaluator.evaluate(Mockito.any(FileContents.class),
+                        Mockito.any(FileRecord.class), Mockito.anyString()))
+                .thenReturn(false);
+
+        Transform transforms = new Transform();
+        transforms.setId("foo-X");
+        TransformOperationsType transformOperationsType = new TransformOperationsType();
+        transformOperationsType.setRow(operationsList);
+        transforms.setOperations(transformOperationsType);
+        Map<String, FileContents> dataFiles = new HashMap<>();
+        dataFiles.put("foo-X", new FileContents(fileHeader, fileRecords));
+
+        UkubukaSchema ukubukaSchema = new UkubukaSchema();
+        ukubukaSchema.setTransforms(Arrays.asList(transforms));
+
+        ukubukaTransformer.performOperations(dataFiles, ukubukaSchema);
+
+        Mockito.verify(expressionEvaluator, Mockito.times(2)).evaluate(
+                Mockito.any(FileContents.class), Mockito.any(FileRecord.class),
+                Mockito.anyString());
+    }
 }
