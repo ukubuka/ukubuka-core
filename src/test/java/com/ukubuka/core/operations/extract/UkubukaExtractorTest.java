@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -66,6 +67,7 @@ public class UkubukaExtractorTest {
     }
 
     @Test
+    @Ignore
     public void test_performOperations_xml_success()
             throws PipelineException, ParserException {
         Mockito.when(xmlParser.parseFile(Mockito.anyString(),
