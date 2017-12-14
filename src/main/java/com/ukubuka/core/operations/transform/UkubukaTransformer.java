@@ -70,6 +70,7 @@ public class UkubukaTransformer implements UkubukaOperations {
      * @param schema
      * @throws PipelineException
      */
+    @Override
     public void performOperations(Map<String, FileContents> dataFiles,
             final UkubukaSchema schema) throws PipelineException {
         try {

@@ -12,6 +12,7 @@ import com.ukubuka.core.model.UkubukaSchema;
  * @author agrawroh
  * @version v1.0
  */
+@FunctionalInterface
 public interface UkubukaOperations {
 
     /**
