@@ -32,10 +32,6 @@ public class UkubukaExtractor implements UkubukaOperations {
 
     /******************************** Dependency Injections *********************************/
     @Autowired
-    @Qualifier("UkubukaXMLParser")
-    private UkubukaParser xmlParser;
-
-    @Autowired
     @Qualifier("UkubukaDFileParser")
     private UkubukaParser delimitedFileParser;
 
@@ -46,6 +42,7 @@ public class UkubukaExtractor implements UkubukaOperations {
      * @param schema
      * @throws PipelineException
      */
+    @Override
     public void performOperations(Map<String, FileContents> dataFiles,
             final UkubukaSchema schema) throws PipelineException {
         try {
@@ -75,11 +72,6 @@ public class UkubukaExtractor implements UkubukaOperations {
                 case CSV:
                     fileContents = delimitedFileParser.parseFile(
                             extract.getLocation(), extract.getFlags());
-                    break;
-                /* XML File */
-                case XML:
-                    fileContents = xmlParser.parseFile(extract.getLocation(),
-                            extract.getFlags());
                     break;
                 /* Unsupported File */
                 default:

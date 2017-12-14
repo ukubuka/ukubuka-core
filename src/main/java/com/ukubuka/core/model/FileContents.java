@@ -16,20 +16,6 @@ public class FileContents {
     private List<FileRecord> data;
     private Map<String, Object> aggregations = new HashMap<>();
 
-    /**
-     * @return the aggregations
-     */
-    public Map<String, Object> getAggregations() {
-        return aggregations;
-    }
-
-    /**
-     * @param aggregations the aggregations to set
-     */
-    public void setAggregations(Map<String, Object> aggregations) {
-        this.aggregations = aggregations;
-    }
-
     /***************************** Default Constructor ****************************/
     public FileContents() {
         /* Do Nothing */
@@ -69,5 +55,19 @@ public class FileContents {
      */
     public void setData(List<FileRecord> data) {
         this.data = data;
+    }
+    
+    /**
+     * @return the aggregations
+     */
+    public Map<String, Object> getAggregations() {
+        return aggregations;
+    }
+
+    /**
+     * @param aggregations the aggregations to set
+     */
+    public void setAggregations(Map<String, Object> aggregations) {
+        this.aggregations = aggregations;
     }
 }
