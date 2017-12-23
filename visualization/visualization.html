@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 1200px;height:800px;"></div>
+    <script type="text/javascript">2
+        //var echarts = require('echarts');
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var statement;
+
+        statement = "radar";
+        switch (statement) {
+            case "bar":
+                $.getJSON("bar.json", function(data){
+                    keys = $.map(data[0], function(v, i){
+                        return i;
+                    });
+                    var Name = [];
+                    var Values = [];
+
+                    var series = [];
+                    //console.log(keys.slice(1, keys.length));
+
+                    for (i = 1; i < keys.length; i++) {
+                        Values.push([]);
+                    }
+
+
+                    for (i = 0; i < Object.keys(data).length; i++) {
+                        Name.push(data[i][keys[0]]);
+                        for (j = 0; j < keys.length - 1; j++) {
+                            Values[j].push(data[i][keys[j + 1]]);
+                        }
+                    }
+                    console.log(Values);
+
+                    for (i = 0; i < keys.length - 1; i++) {
+                        series.push ({
+                                name:keys[i + 1],
+                                type:'bar',
+                                data:Values[i],
+                                markPoint : {
+                                    data : [
+                                        {type : 'max', name: '最大值'},
+                                        {type : 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine : {
+                                    data : [
+                                        {type : 'average', name: '平均值'}
+                                    ]
+                                }
+                            });
+                    }
+                    
+                    option = {
+                        title : {
+                            text: 'Bar Chart'
+                        },
+                        tooltip : {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: keys.slice(1, keys.length)
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                dataView : {show: true, readOnly: false},
+                                magicType : {show: true, type: ['line', 'bar']},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        xAxis : [
+                            {
+                                type : 'category',
+                                data : Name
+                            },
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value'
+                            },
+                        ],
+                        series : series
+                    };
+                    myChart.setOption(option);
+                });
+                break;
+            case "stacked_line":
+                $.getJSON("stacked_line.json", function(data){
+                    var names = [];
+                    var series = [];
+
+                    // extract the keys of each dict item
+                    keys = $.map(data[0], function(v, i){
+                        return i;
+                    });
+                    // set x-axis:
+                    var x_axis = keys.slice(1, keys.length);
+
+                    for (i = 0; i < Object.keys(data).length; i++) {
+                        // get the names
+                        names.push(data[i][keys[0]]);
+                        // get the 2D list
+                        temp = [];
+                        for (j = 0; j < x_axis.length; j++) {
+                            temp.push(data[i][keys[j + 1]]);
+                        }
+                        // set the series as a list of dicts.
+                        series.push({
+                            name: names[i],
+                            type: 'line',
+                            stack: '',
+                            data: temp
+                        });
+                    }
+
+                    option = {
+                        title: {
+                            text: ''
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: names
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {                            
+                            type: 'category',
+                            boundaryGap: false,
+                            data: x_axis,
+                            scale: true
+                        },
+                        yAxis: {
+                            type: 'value',
+                            scale: true
+                        },
+                        series: series
+                    };
+                    myChart.setOption(option);
+                });
+                break;
+            case "bubble":
+
+                $.getJSON("bubble.json", function(json){
+                    var list = [];
+
+                    keys = $.map(json[0], function(v, i){
+                        return i;
+                    });
+
+                    var sum = 0;
+                    //console.log(typeof(data[0][keys[0]]));
+                    for (i = 0; i < Object.keys(json).length; i++) {
+                        sum += json[i][keys[3]];
+                        list.push([json[i][keys[1]], json[i][keys[2]], json[i][keys[3]], json[i][keys[0]], 1]);
+                    }
+                    var scale = sum / (list.length * 100);
+                    
+                    for (i = 0; i < Object.keys(list).length; i++) {
+                        list[i][2] /= scale;
+                    }
+
+
+                    option = {
+                        backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 1.0, [{
+                            offset: 0,
+                            color: '#f7f8fa'
+                        }, {
+                            offset: 1,
+                            color: '#cdd0d5'
+                        }]),
+                        title: {
+                            text: 'Bubble Chart'
+                        },
+                        legend: {
+                            right: 10,
+                            data: ['']
+                        },
+                        xAxis: {
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            },
+                            scale: true
+                        },
+                        yAxis: {
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed'
+                                }
+                            },
+                            scale: true
+                        },
+                        series: [{
+                            name: '',
+                            data: list,
+                            type: 'scatter',
+                            symbolSize: function (data) {
+                                return data[2];
+                            },
+                            label: {
+                                emphasis: {
+                                    show: true,
+                                    formatter: function (param) {
+                                        console.log(list);
+                                        return param.data[3];
+                                    },
+                                    position: 'top'
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    shadowBlur: 10,
+                                    shadowColor: 'rgba(120, 36, 50, 0.5)',
+                                    shadowOffsetY: 5,
+                                    color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                                        offset: 0,
+                                        color: 'rgb(251, 118, 123)'
+                                    }, {
+                                        offset: 1,
+                                        color: 'rgb(204, 46, 72)'
+                                    }])
+                                }
+                            }
+                        }]
+                    };
+                    myChart.setOption(option);
+                });
+                
+                break;
+            case "radar":
+                $.getJSON("radar.json", function(data){
+                    var entries = [];
+                    var names = [];
+                    var values = []
+                    
+                    var indicator = [];
+                    var datalist = [];
+
+                    keys = $.map(data[0], function(v, i){
+                        return i;
+                    });
+
+                    for (j = 1; j < keys.length; j++) {
+                        entries.push(keys[j]);
+                    }
+
+                    for (i = 0; i < Object.keys(data).length; i++) {
+                        names.push(data[i][keys[0]]);
+                        values.push([]);
+                        for (j = 1; j < keys.length; j++) {
+                            values[i].push(data[i][keys[j]]);
+                        }
+                        datalist.push({value: values[i], name: names[i]});
+                    }
+
+                    for (j = 0; j < keys.length - 1; j++) {
+                        indicator.push({name: entries[j], max: parseInt(Math.max(...values[j]) * 2)})
+                    }
+
+                    // for (i = 0; i < Object.keys(data).length; i++) {
+                    //     entries.push(data[i][keys[0]]);
+                    //     indicator.push({name:});
+                    // }
+
+                    console.log(names);
+                    console.log(indicator);
+                    console.log(datalist);
+                    option = {
+                        title: {
+                            text: 'radar'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: names
+                        },
+                        radar: {
+                            // shape: 'circle',
+                            name: {
+                                textStyle: {
+                                    color: '#fff',
+                                    backgroundColor: '#999',
+                                    borderRadius: 3,
+                                    padding: [3, 5]
+                               }
+                            },
+                            indicator: indicator
+                        },
+                        series: [{
+                            name: '',
+                            type: 'radar',
+                            // areaStyle: {normal: {}},
+                            data : datalist
+                        }]
+                    };
+
+                    myChart.setOption(option);
+                });
+                break;
+        }
+
+
+    </script>
+</body>
+</html>
